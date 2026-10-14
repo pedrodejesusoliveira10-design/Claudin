@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Claudin.ia</title>
+  <title>Claudin.ia — AI Hub & Agentes</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
@@ -28,131 +28,142 @@
       50% { transform: rotate(180deg) scale(1.15); opacity: 1; filter: drop-shadow(0 0 10px #9B8AFB); }
       100% { transform: rotate(360deg) scale(0.9); opacity: 0.7; }
     }
-    .star-thinking {
-      animation: spinPulse 2.2s infinite ease-in-out;
-    }
+    .star-thinking { animation: spinPulse 2s infinite ease-in-out; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="h-[100dvh] flex flex-col overflow-hidden select-none relative">
 
-  <!-- GAVETA LATERAL (MENU ESTILO GEMINI) -->
+  <!-- GAVETA LATERAL (ESTILO GEMINI + HUB DE AGENTES) -->
   <div id="drawerOverlay" onclick="toggleDrawer(false)" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-30 hidden"></div>
   <aside id="sideDrawer" class="fixed top-0 left-0 bottom-0 w-72 bg-[#111118] border-r border-zinc-800/80 z-40 transform -translate-x-full transition-transform duration-300 flex flex-col justify-between p-4">
     <div class="space-y-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="text-[#9B8AFB] text-xl">✦</span>
-          <span class="font-bold text-base tracking-tight">Claudin.ia</span>
+          <span class="font-bold text-base tracking-tight">Claudin<span class="text-[#9B8AFB]">.ia</span></span>
         </div>
         <button onclick="toggleDrawer(false)" class="p-1.5 text-zinc-400 hover:text-white rounded-full">✕</button>
       </div>
 
       <button onclick="resetChat()" class="w-full py-2.5 px-3.5 rounded-full bg-[#1C1C28] hover:bg-[#252535] border border-zinc-700/60 text-xs font-medium flex items-center gap-2 text-zinc-200 transition">
-        <span class="text-base leading-none">+</span> Nova conversa
+        <span class="text-base leading-none">+</span> Nova sessão limpa
       </button>
 
-      <div class="space-y-1 pt-2">
-        <p class="text-[11px] font-semibold text-zinc-500 uppercase px-2 mb-1">Painéis do Sistema</p>
+      <div class="space-y-1 pt-1">
+        <p class="text-[10px] font-semibold text-zinc-500 uppercase px-2 mb-1">Navegação do Hub</p>
         <button onclick="openView('chat'); toggleDrawer(false);" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-zinc-800/50 text-xs flex items-center gap-2.5 text-zinc-200">
-          <span>✦</span> Conversa Principal
+          <span>✦</span> Chat & Agentes Ativos
         </button>
         <button onclick="openView('models'); toggleDrawer(false);" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-zinc-800/50 text-xs flex items-center justify-between text-zinc-200">
-          <span class="flex items-center gap-2.5"><span>📊</span> Tabela de IAs & Tokens</span>
+          <span class="flex items-center gap-2.5"><span>📊</span> Matriz de IAs & Tokens</span>
           <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#34D399]/15 text-[#34D399]">Auto</span>
         </button>
         <button onclick="openView('artifact'); toggleDrawer(false);" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-zinc-800/50 text-xs flex items-center gap-2.5 text-zinc-200">
-          <span>⚡</span> Canvas / Artifact Ativo
+          <span>⚡</span> Canvas / Preview ao Vivo
         </button>
       </div>
     </div>
 
-    <!-- Rodapé da Gaveta: Conta Google & Status -->
     <div class="pt-3 border-t border-zinc-800/80 space-y-2">
       <button onclick="connectGoogle()" class="w-full py-2.5 px-3 rounded-xl bg-white text-zinc-900 font-semibold text-xs flex items-center justify-center gap-2 shadow">
         <span class="text-blue-600 font-black">G</span>
         <span id="drawerGoogleText">Conectar Conta Google</span>
       </button>
       <div class="flex items-center justify-between text-[11px] text-zinc-500 px-1">
-        <span>Skill Anti-Queda</span>
-        <span class="text-[#34D399] font-medium">● Ativa</span>
+        <span>Modo Ultra-Assertivo</span>
+        <span class="text-[#34D399] font-medium">● Ativo</span>
       </div>
     </div>
   </aside>
 
-  <!-- TOPO MINIMALISTA ESTILO GEMINI + PÍLULA DA SUA IMAGEM -->
-  <header class="px-4 py-3 flex items-center justify-between z-10 bg-[#09090E]/90 backdrop-blur-md">
-    <div class="flex items-center gap-3">
+  <!-- TOPO -->
+  <header class="px-4 py-2.5 flex items-center justify-between z-10 bg-[#09090E]/90 backdrop-blur-md border-b border-zinc-900/80">
+    <div class="flex items-center gap-2.5">
       <button onclick="toggleDrawer(true)" class="w-9 h-9 rounded-full bg-[#13131C] border border-zinc-800 flex items-center justify-center text-zinc-300 active:scale-95 transition">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h12M4 18h16"/></svg>
       </button>
-
-      <div onclick="openView('chat')" class="cursor-pointer flex items-center gap-1.5">
-        <span class="font-semibold text-base tracking-tight text-white">Claudin<span class="text-[#9B8AFB]">.ia</span></span>
+      <div>
+        <span class="font-bold text-sm tracking-tight text-white">Claudin<span class="text-[#9B8AFB]">.ia</span></span>
+        <span id="activeAgentTag" class="ml-1.5 text-[10px] px-2 py-0.5 rounded-full bg-[#9B8AFB]/15 text-[#9B8AFB] font-medium">Agente Geral</span>
       </div>
     </div>
 
-    <!-- Pílula Direita Estilo "● Geração Auto ⌄" -->
-    <button onclick="openView('models')" class="px-3.5 py-1.5 rounded-full bg-[#13131C] border border-zinc-800/90 flex items-center gap-2 text-xs font-medium text-zinc-200 active:scale-95 transition">
-      <span id="topStatusDot" class="w-2 h-2 rounded-full bg-[#34D399]"></span>
-      <span id="activeModelBadge" class="max-w-[115px] truncate">Auto-Router</span>
+    <!-- Pílula de Status da IA -->
+    <button onclick="openView('models')" class="px-3 py-1.5 rounded-full bg-[#13131C] border border-zinc-800/90 flex items-center gap-2 text-xs font-medium text-zinc-200 active:scale-95 transition">
+      <span class="w-2 h-2 rounded-full bg-[#34D399]"></span>
+      <span id="activeModelBadge" class="max-w-[105px] truncate">Auto-Router</span>
       <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
     </button>
   </header>
 
-  <!-- VIEW 1: CONVERSA FLUIDA ESTILO GEMINI -->
+  <!-- BARRA DE AGENTES ESPECIALISTAS (ESTILO MYHUB.IA) -->
+  <div class="px-3 py-2 bg-[#09090E] border-b border-zinc-900 flex gap-2 overflow-x-auto no-scrollbar">
+    <button onclick="setAgent('geral')" id="ag_geral" class="agent-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#9B8AFB] text-[#09090E] transition">
+      ✦ Mestre Geral
+    </button>
+    <button onclick="setAgent('coder')" id="ag_coder" class="agent-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-[#13131C] text-zinc-300 border border-zinc-800 transition">
+      💻 Dev & Criador de Apps
+    </button>
+    <button onclick="setAgent('copy')" id="ag_copy" class="agent-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-[#13131C] text-zinc-300 border border-zinc-800 transition">
+      🎯 Copywriter & Vendas
+    </button>
+    <button onclick="setAgent('analista')" id="ag_analista" class="agent-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-[#13131C] text-zinc-300 border border-zinc-800 transition">
+      🧠 Analista & Estratégia
+    </button>
+  </div>
+
+  <!-- VIEW 1: CHAT PRINCIPAL -->
   <main id="viewChat" class="flex-1 flex flex-col overflow-hidden">
     <div id="messages" class="flex-1 overflow-y-auto px-4 pt-4 pb-6 space-y-6 max-w-2xl w-full mx-auto">
       
-      <!-- Saudação Inicial Estilo Gemini -->
-      <div id="geminiHero" class="mt-10 space-y-6 px-2">
-        <div class="space-y-1.5">
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#13131C] border border-zinc-800 text-[11px] text-[#34D399] mb-2">
-            <span>✦</span> <span id="heroTokenBanner">Rotação contínua de tokens ativa</span>
+      <!-- Dashboard Inicial -->
+      <div id="geminiHero" class="mt-6 space-y-5 px-1">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#13131C] border border-zinc-800 text-[11px] text-[#34D399] mb-1">
+            <span>⚡</span> <span>Engenharia de Prompt Automática + Multi-IA</span>
           </div>
-          <h1 class="text-3xl font-bold tracking-tight">
+          <h1 class="text-2xl font-bold tracking-tight">
             <span class="text-gradient">Olá! Eu sou o Claudin.ia</span>
           </h1>
-          <p class="text-lg text-zinc-400 font-normal">Como posso ajudar você a criar hoje?</p>
+          <p id="agentDescText" class="text-xs text-zinc-400">
+            Selecione um Agente acima ou use a varinha mágica (✨) abaixo para respostas ultra-assertivas.
+          </p>
         </div>
 
-        <!-- Chips Horizontais Deslizantes -->
-        <div class="flex gap-2.5 overflow-x-auto no-scrollbar pb-2 pt-2">
-          <button onclick="quickSend('Cria uma calculadora moderna com design escuro e detalhes lilás em HTML')" 
-            class="shrink-0 p-3.5 rounded-2xl bg-[#13131C] hover:bg-[#1C1C28] border border-zinc-800/90 text-left w-44 space-y-2 transition">
-            <div class="w-7 h-7 rounded-full bg-[#9B8AFB]/15 text-[#9B8AFB] flex items-center justify-center text-xs">⚡</div>
-            <p class="text-xs font-medium text-zinc-200 line-clamp-2">Criar calculadora neon interativa</p>
+        <!-- Cards de Ação Rápida por Especialidade -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <button onclick="setAgent('coder'); quickSend('Cria um sistema completo de Gestão de Tarefas e Finanças em HTML com gráficos e modo escuro')" 
+            class="p-3.5 rounded-2xl bg-[#13131C] hover:bg-[#1C1C28] border border-zinc-800/90 text-left space-y-1.5 transition">
+            <div class="text-xs font-bold text-[#9B8AFB]">💻 Criar SaaS / App</div>
+            <p class="text-[11px] text-zinc-400 line-clamp-2">Gera código funcional direto no Canvas</p>
           </button>
 
-          <button onclick="quickSend('Explica de forma simples e direta como funciona a Inteligência Artificial')" 
-            class="shrink-0 p-3.5 rounded-2xl bg-[#13131C] hover:bg-[#1C1C28] border border-zinc-800/90 text-left w-44 space-y-2 transition">
-            <div class="w-7 h-7 rounded-full bg-[#34D399]/15 text-[#34D399] flex items-center justify-center text-xs">💡</div>
-            <p class="text-xs font-medium text-zinc-200 line-clamp-2">Ideias e explicações diretas</p>
-          </button>
-
-          <button onclick="openView('models')" 
-            class="shrink-0 p-3.5 rounded-2xl bg-[#13131C] hover:bg-[#1C1C28] border border-zinc-800/90 text-left w-44 space-y-2 transition">
-            <div class="w-7 h-7 rounded-full bg-[#9B8AFB]/15 text-[#9B8AFB] flex items-center justify-center text-xs">📊</div>
-            <p class="text-xs font-medium text-zinc-200 line-clamp-2">Ver tabela de IAs e conectar Google</p>
+          <button onclick="setAgent('copy'); quickSend('Cria uma estratégia de vendas e uma copy altamente persuasiva para lançar um produto digital')" 
+            class="p-3.5 rounded-2xl bg-[#13131C] hover:bg-[#1C1C28] border border-zinc-800/90 text-left space-y-1.5 transition">
+            <div class="text-xs font-bold text-[#34D399]">🎯 Copy de Alta Conversão</div>
+            <p class="text-[11px] text-zinc-400 line-clamp-2">Textos prontos com gatilhos mentais</p>
           </button>
         </div>
       </div>
 
     </div>
 
-    <!-- BARRA DE COMANDO FLUTUANTE ESTILO GEMINI -->
+    <!-- BARRA FLUTUANTE COM BOTÃO "MELHORAR PROMPT (✨)" -->
     <div class="px-3 pb-3 pt-1 bg-gradient-to-t from-[#09090E] via-[#09090E] to-transparent">
-      <form id="chatForm" class="max-w-2xl mx-auto bg-[#13131C] border border-zinc-800 focus-within:border-[#9B8AFB]/70 rounded-3xl p-2 pl-4 flex items-center gap-2 shadow-2xl transition">
+      <form id="chatForm" class="max-w-2xl mx-auto bg-[#13131C] border border-zinc-800 focus-within:border-[#9B8AFB]/70 rounded-3xl p-1.5 pl-3 flex items-center gap-1.5 shadow-2xl transition">
         
-        <button type="button" onclick="openView('models')" title="Configurar IAs & Chaves" class="text-zinc-400 hover:text-[#9B8AFB] p-1.5 rounded-full transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+        <!-- Botão Mágico: Otimizador de Prompt para Máxima Assertividade -->
+        <button type="button" onclick="togglePromptBooster()" id="boosterBtn" title="Ativar/Desativar Super-Assertividade" 
+          class="px-2.5 py-1.5 rounded-full bg-[#9B8AFB]/20 text-[#9B8AFB] border border-[#9B8AFB]/40 text-[11px] font-semibold flex items-center gap-1 shrink-0 transition">
+          <span>✨</span> <span id="boosterLabel">Boost ON</span>
         </button>
 
-        <input id="userInput" type="text" placeholder="Peça ao Claudin.ia..." 
-          class="flex-1 bg-transparent py-2 text-sm text-white placeholder-zinc-500 focus:outline-none" required />
+        <input id="userInput" type="text" placeholder="Pergunte ou peça um projeto..." 
+          class="flex-1 bg-transparent py-2 px-1 text-sm text-white placeholder-zinc-500 focus:outline-none" required />
 
-        <button type="submit" class="w-10 h-10 rounded-full bg-[#9B8AFB] text-[#09090E] flex items-center justify-center font-bold shadow-md active:scale-90 transition shrink-0">
+        <button type="submit" class="w-9 h-9 rounded-full bg-[#9B8AFB] text-[#09090E] flex items-center justify-center font-bold shadow-md active:scale-90 transition shrink-0">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </form>
@@ -164,14 +175,13 @@
     <div class="flex items-center justify-between">
       <div>
         <h2 class="text-base font-bold text-white">Central de IAs & Skills de Tokens</h2>
-        <p class="text-xs text-[#34D399]">Troca invisível de modelo quando os tokens chegam ao limite</p>
+        <p class="text-xs text-[#34D399]">Troca automática e invisível quando os tokens acabam</p>
       </div>
       <button onclick="openView('chat')" class="px-3.5 py-1.5 rounded-full bg-[#13131C] border border-zinc-800 text-xs text-zinc-300">
         Voltar
       </button>
     </div>
 
-    <!-- Card de Chaves e Google -->
     <div class="bg-[#13131C] border border-zinc-800/90 p-4 rounded-3xl space-y-3.5">
       <div class="flex items-center justify-between">
         <span class="text-xs font-semibold text-[#9B8AFB]">Conexão Google & Pool de Chaves</span>
@@ -182,7 +192,7 @@
       </div>
 
       <div class="space-y-1.5">
-        <label class="text-[11px] text-zinc-400">Chaves Groq (separe várias por vírgula para nunca acabar):</label>
+        <label class="text-[11px] text-zinc-400">Chaves Groq (separe várias por vírgula):</label>
         <input id="groqKeysInput" type="password" placeholder="gsk_chave1, gsk_chave2..." 
           class="w-full p-3 text-xs rounded-2xl bg-[#09090E] border border-zinc-800 text-zinc-200 focus:border-[#9B8AFB] focus:outline-none" />
       </div>
@@ -198,7 +208,6 @@
       </button>
     </div>
 
-    <!-- Tabela de Todas as IAs -->
     <div class="bg-[#13131C] border border-zinc-800/90 rounded-3xl overflow-hidden">
       <div class="p-3.5 border-b border-zinc-800 flex justify-between items-center">
         <span class="text-xs font-bold text-zinc-200">Tabela de Todas as IAs</span>
@@ -211,7 +220,7 @@
               <th class="p-3">Rede</th>
               <th class="p-3">Modelo</th>
               <th class="p-3">Status</th>
-              <th class="p-3 text-right">Modo</th>
+              <th class="p-3 text-right">Ação</th>
             </tr>
           </thead>
           <tbody id="aiTableBody" class="divide-y divide-zinc-800/60"></tbody>
@@ -235,8 +244,37 @@
   </section>
 
   <script>
-    const SYSTEM_PROMPT = `Você é o Claudin.ia. O seu estilo de conversa é igual ao do Gemini: claro, direto, inteligente, empático e bem estruturado.
-Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, dashboard ou aplicativo visual, explique brevemente a solução e coloque TODO o código HTML+CSS(Tailwind)+JS funcional dentro da tag <antArtifact>...</antArtifact>. Não use blocos markdown dentro da tag, apenas o código HTML puro começando por <!DOCTYPE html>.`;
+    // AGENTES ESPECIALISTAS PARA ASSERTIVIDADE MÁXIMA (ESTILO MYHUB.IA)
+    const AGENTS = {
+      geral: {
+        name: 'Agente Geral',
+        temp: 0.4,
+        desc: 'Respostas diretas, estruturadas e sem enrolação.',
+        prompt: `Você é o Claudin.ia (Mestre Geral). Responda com precisão cirúrgica, clareza absoluta e formatação impecável. Vá direto ao ponto na primeira frase. Se o utilizador pedir qualquer interface, calculadora, jogo ou site, coloque TODO o código HTML+CSS(Tailwind)+JS funcional dentro da tag <antArtifact>...</antArtifact> (sem blocos markdown dentro da tag).`
+      },
+      coder: {
+        name: 'Dev Full-Stack',
+        temp: 0.15,
+        desc: 'Especialista em criar aplicativos completos, bonitos e sem bugs.',
+        prompt: `Você é o Agente Arquiteto de Software Sénior do Claudin.ia. Sua missão é gerar código 100% funcional, moderno, responsivo e sem erros. Sempre que pedirem uma ferramenta, página ou app, explique em 2 linhas e coloque o código HTML5 + Tailwind CSS + JavaScript completo e autocontido dentro de <antArtifact>...</antArtifact> (iniciando com <!DOCTYPE html>, sem usar \`\`\`html dentro da tag).`
+      },
+      copy: {
+        name: 'Copywriter Pro',
+        temp: 0.65,
+        desc: 'Focado em persuasão, vendas, roteiros e marketing digital.',
+        prompt: `Você é o Agente Estrategista de Marketing e Copywriter Sénior do Claudin.ia. Use frameworks comprovados (AIDA, PAS, Storytelling) para criar textos altamente persuasivos, claros e prontos para converter. Entregue variações de títulos, chamadas para ação (CTA) fortes e estrutura escaneável.`
+      },
+      analista: {
+        name: 'Analista Lógico',
+        temp: 0.2,
+        desc: 'Raciocínio passo a passo, resolução de problemas e negócios.',
+        prompt: `Você é o Agente Analista de Estratégia e Dados do Claudin.ia. Pense passo a passo antes de responder. Estruture qualquer análise em: 1. Diagnóstico Direto, 2. Plano de Ação Prático e 3. Métricas/Riscos. Nunca dê respostas vagas; use exemplos concretos.`
+      }
+    };
+
+    let currentAgentKey = 'geral';
+    let promptBoosterActive = true;
+    let conversationHistory = []; // Memória de contexto para assertividade contínua
 
     let aiModelsPool = [
       { provider: 'Groq', id: 'llama-3.1-8b-instant', cooldown: false },
@@ -255,6 +293,40 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
 
     groqInput.value = localStorage.getItem('groq_keys_pool') || localStorage.getItem('groq_key') || '';
     googleInput.value = localStorage.getItem('google_keys_pool') || '';
+
+    function setAgent(key) {
+      currentAgentKey = key;
+      const ag = AGENTS[key];
+      document.getElementById('activeAgentTag').textContent = ag.name;
+      const descEl = document.getElementById('agentDescText');
+      if (descEl) descEl.textContent = ag.desc;
+
+      ['geral', 'coder', 'copy', 'analista'].forEach(k => {
+        const btn = document.getElementById('ag_' + k);
+        btn.className = k === key
+          ? 'agent-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#9B8AFB] text-[#09090E] transition'
+          : 'agent-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-[#13131C] text-zinc-300 border border-zinc-800 transition';
+      });
+    }
+
+    function togglePromptBooster() {
+      promptBoosterActive = !promptBoosterActive;
+      const btn = document.getElementById('boosterBtn');
+      const lbl = document.getElementById('boosterLabel');
+      if (promptBoosterActive) {
+        btn.className = 'px-2.5 py-1.5 rounded-full bg-[#9B8AFB]/20 text-[#9B8AFB] border border-[#9B8AFB]/40 text-[11px] font-semibold flex items-center gap-1 shrink-0 transition';
+        lbl.textContent = 'Boost ON';
+      } else {
+        btn.className = 'px-2.5 py-1.5 rounded-full bg-zinc-800/60 text-zinc-400 border border-zinc-700 text-[11px] font-medium flex items-center gap-1 shrink-0 transition';
+        lbl.textContent = 'Boost OFF';
+      }
+    }
+
+    // Transforma pedidos simples em instruções ricas e assertivas automaticamente
+    function buildAssertivePrompt(rawPrompt) {
+      if (!promptBoosterActive) return rawPrompt;
+      return `${rawPrompt}\n\n[Diretriz de Assertividade: Seja direto, completo e prático. Entregue a solução final pronta para uso imediato, sem introduções genéricas.]`;
+    }
 
     function updateGoogleLabels() {
       const user = localStorage.getItem('google_user');
@@ -279,6 +351,7 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
     }
 
     function resetChat() {
+      conversationHistory = [];
       toggleDrawer(false);
       openView('chat');
       location.reload();
@@ -373,13 +446,16 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
       }).join('');
     }
 
-    async function askWithAutoFailover(prompt, onProgress) {
+    async function askWithAutoFailover(rawPrompt, onProgress) {
       const groqKeys = getKeys('groq');
       const googleKeys = getKeys('google');
 
       if (groqKeys.length === 0 && googleKeys.length === 0) {
-        throw new Error('Para começar, toque no botão abaixo e cole a sua chave Groq (gsk_...) ou Google Gemini (AIza...).');
+        throw new Error('Toque no botão abaixo para configurar a sua chave Groq (gsk_...) ou Google Gemini (AIza...).');
       }
+
+      const activeAgent = AGENTS[currentAgentKey];
+      const finalUserPrompt = buildAssertivePrompt(rawPrompt);
 
       let queue = [...aiModelsPool];
       if (preferredModelId) {
@@ -392,7 +468,13 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
         if (modelObj.provider === 'Groq' && groqKeys.length > 0) {
           for (const key of groqKeys) {
             try {
-              onProgress(`Pensando com ${modelObj.id}...`);
+              onProgress(`${activeAgent.name} · Processando via ${modelObj.id}...`);
+              const messagesPayload = [
+                { role: 'system', content: activeAgent.prompt },
+                ...conversationHistory.slice(-4),
+                { role: 'user', content: finalUserPrompt }
+              ];
+
               const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -401,11 +483,9 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
                 },
                 body: JSON.stringify({
                   model: modelObj.id,
-                  max_tokens: 850,
-                  messages: [
-                    { role: 'system', content: SYSTEM_PROMPT },
-                    { role: 'user', content: prompt }
-                  ]
+                  temperature: activeAgent.temp,
+                  max_tokens: 900,
+                  messages: messagesPayload
                 })
               });
 
@@ -417,8 +497,11 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
               }
 
               modelObj.cooldown = false;
+              const replyText = data.choices[0].message.content;
+              conversationHistory.push({ role: 'user', content: rawPrompt });
+              conversationHistory.push({ role: 'assistant', content: replyText });
               document.getElementById('activeModelBadge').textContent = modelObj.id;
-              return { reply: data.choices[0].message.content, usedModel: modelObj.id };
+              return { reply: replyText, usedModel: modelObj.id, agentName: activeAgent.name };
             } catch (e) {
               lastErr = e.message;
               continue;
@@ -429,13 +512,14 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
         if (modelObj.provider === 'Google' && googleKeys.length > 0) {
           for (const gKey of googleKeys) {
             try {
-              onProgress(`Pensando com Google ${modelObj.id}...`);
+              onProgress(`${activeAgent.name} · Processando via Google ${modelObj.id}...`);
               const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelObj.id}:generateContent?key=${gKey}`;
               const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n\nPedido: " + prompt }] }]
+                  contents: [{ parts: [{ text: activeAgent.prompt + "\n\nPedido: " + finalUserPrompt }] }],
+                  generationConfig: { temperature: activeAgent.temp }
                 })
               });
               const data = await res.json();
@@ -447,8 +531,10 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
               const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
               if (text) {
                 modelObj.cooldown = false;
+                conversationHistory.push({ role: 'user', content: rawPrompt });
+                conversationHistory.push({ role: 'assistant', content: text });
                 document.getElementById('activeModelBadge').textContent = modelObj.id;
-                return { reply: text, usedModel: modelObj.id };
+                return { reply: text, usedModel: modelObj.id, agentName: activeAgent.name };
               }
             } catch (e) {
               lastErr = e.message;
@@ -473,7 +559,6 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
 
       const msgContainer = document.getElementById('messages');
 
-      // Balão do Utilizador (Estilo Gemini: Pílula alinhada à direita)
       msgContainer.innerHTML += `
         <div class="flex justify-end">
           <div class="bg-[#1C1C28] text-zinc-100 px-4 py-3 rounded-3xl rounded-tr-sm max-w-[82%] text-sm leading-relaxed">
@@ -481,7 +566,6 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
           </div>
         </div>`;
 
-      // Resposta do Claudin.ia (Estilo Gemini: Estrela à esquerda + Texto fluido sem caixa)
       const responseWrapper = document.createElement('div');
       responseWrapper.className = 'flex items-start gap-3.5 pr-2';
       responseWrapper.innerHTML = `
@@ -489,7 +573,7 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
           <span class="star-icon text-[#9B8AFB] text-sm star-thinking">✦</span>
         </div>
         <div class="response-body flex-1 text-sm text-zinc-200 leading-relaxed whitespace-pre-wrap pt-0.5">
-          <span class="text-zinc-400 text-xs">A iniciar síntese...</span>
+          <span class="text-zinc-400 text-xs">A calibrar agente especialista...</span>
         </div>
       `;
       msgContainer.appendChild(responseWrapper);
@@ -499,7 +583,7 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
       const bodyEl = responseWrapper.querySelector('.response-body');
 
       try {
-        const { reply, usedModel } = await askWithAutoFailover(prompt, (st) => {
+        const { reply, usedModel, agentName } = await askWithAutoFailover(prompt, (st) => {
           bodyEl.innerHTML = `<span class="text-[#9B8AFB] text-xs font-medium">${st}</span>`;
         });
 
@@ -510,15 +594,14 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
           document.getElementById('previewFrame').srcdoc = match[1].trim();
           const cleanText = reply.replace(/<antArtifact>[\s\S]*?<\/antArtifact>/, '').trim();
           bodyEl.innerHTML = `
-            <div class="text-[11px] text-[#34D399] font-medium mb-1">Claudin.ia · ${usedModel}</div>
+            <div class="text-[11px] text-[#34D399] font-medium mb-1">${agentName} · ${usedModel}</div>
             <div>${cleanText}</div>
-            <!-- Card estilo Gemini Canvas -->
             <div onclick="openView('artifact')" class="mt-3 p-3.5 rounded-2xl bg-[#13131C] border border-[#9B8AFB]/40 hover:border-[#9B8AFB] flex items-center justify-between cursor-pointer transition">
               <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-[#9B8AFB] text-[#09090E] flex items-center justify-center font-bold">⚡</div>
                 <div>
-                  <div class="text-xs font-bold text-white">Aplicação Interativa Pronta</div>
-                  <div class="text-[11px] text-[#34D399]">Toque para executar em ecrã inteiro</div>
+                  <div class="text-xs font-bold text-white">Projeto Interativo Pronto</div>
+                  <div class="text-[11px] text-[#34D399]">Toque para abrir em ecrã inteiro</div>
                 </div>
               </div>
               <span class="text-xs font-bold text-[#9B8AFB] px-2">Abrir ↗</span>
@@ -526,7 +609,7 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
           `;
         } else {
           bodyEl.innerHTML = `
-            <div class="text-[11px] text-[#34D399] font-medium mb-1">Claudin.ia · ${usedModel}</div>
+            <div class="text-[11px] text-[#34D399] font-medium mb-1">${agentName} · ${usedModel}</div>
             <div>${reply}</div>
           `;
         }
@@ -534,7 +617,7 @@ Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, das
         starEl.classList.remove('star-thinking');
         bodyEl.innerHTML = `
           <div class="p-4 rounded-2xl bg-[#13131C] border border-zinc-800 space-y-2.5">
-            <div class="text-xs font-semibold text-[#9B8AFB]">Configuração rápida necessária</div>
+            <div class="text-xs font-semibold text-[#9B8AFB]">Configuração necessária</div>
             <div class="text-xs text-zinc-400">${err.message}</div>
             <button onclick="openView('models')" class="px-4 py-2 rounded-full bg-[#9B8AFB] text-[#09090E] font-bold text-xs">
               Configurar Chaves & IAs
