@@ -1,228 +1,242 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Claudin.ia — Inteligência Artificial Contínua</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Claudin.ia</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
-      --bg-deep: #08080C;
-      --bg-card: #12121A;
-      --bg-pill: #1A1A26;
-      --border-subtle: #262638;
-      --accent-lilac: #9B8AFB;
-      --accent-emerald: #34D399;
+      --bg-main: #09090E;
+      --bg-surface: #13131C;
+      --bg-elevated: #1C1C28;
+      --lilac: #9B8AFB;
+      --emerald: #34D399;
     }
     body {
-      background-color: var(--bg-deep);
-      color: #F3F4F6;
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: #ECECF1;
+      font-family: -apple-system, BlinkMacSystemFont, "Google Sans", "Inter", Roboto, sans-serif;
     }
-    .ambient-glow {
-      background: radial-gradient(circle at 50% 0%, rgba(155, 138, 251, 0.14) 0%, rgba(8, 8, 12, 0) 70%);
+    .text-gradient {
+      background: linear-gradient(90deg, #9B8AFB 0%, #C4B5FD 50%, #34D399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .core-glow {
-      box-shadow: 0 0 40px -5px rgba(155, 138, 251, 0.35);
+    @keyframes spinPulse {
+      0% { transform: rotate(0deg) scale(0.9); opacity: 0.7; }
+      50% { transform: rotate(180deg) scale(1.15); opacity: 1; filter: drop-shadow(0 0 10px #9B8AFB); }
+      100% { transform: rotate(360deg) scale(0.9); opacity: 0.7; }
     }
-    .glass-card {
-      background: rgba(18, 18, 26, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-subtle);
+    .star-thinking {
+      animation: spinPulse 2.2s infinite ease-in-out;
     }
-    .btn-primary {
-      background-color: var(--accent-lilac);
-      color: #08080C;
-      font-weight: 600;
-    }
-    .btn-primary:active {
-      transform: scale(0.98);
-    }
-    .btn-outline {
-      background-color: transparent;
-      border: 1px solid var(--border-subtle);
-      color: #E5E7EB;
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden ambient-glow select-none">
+<body class="h-[100dvh] flex flex-col overflow-hidden select-none relative">
 
-  <!-- HEADER ORIGINAL COM ESTÉTICA DARK/LILÁS -->
-  <header class="px-4 pt-3 pb-2.5 border-b border-[#1E1E2C] flex flex-col gap-2.5 z-10 bg-[#08080C]/80 backdrop-blur-md">
-    <div class="flex items-center justify-between">
-      <!-- Marca Claudin.ia -->
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-2xl bg-[#1A1A26] border border-[#2E2E42] flex items-center justify-center core-glow">
-          <svg class="w-5 h-5 text-[#9B8AFB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v3m0 12v3M3 12h3m12 0h3m-2.636-6.364l-2.122 2.122M8.758 15.242l-2.122 2.122m0-12.728l2.122 2.122m6.484 6.484l2.122 2.122"/>
-            <circle cx="12" cy="12" r="3" fill="currentColor"/>
-          </svg>
+  <!-- GAVETA LATERAL (MENU ESTILO GEMINI) -->
+  <div id="drawerOverlay" onclick="toggleDrawer(false)" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-30 hidden"></div>
+  <aside id="sideDrawer" class="fixed top-0 left-0 bottom-0 w-72 bg-[#111118] border-r border-zinc-800/80 z-40 transform -translate-x-full transition-transform duration-300 flex flex-col justify-between p-4">
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-[#9B8AFB] text-xl">✦</span>
+          <span class="font-bold text-base tracking-tight">Claudin.ia</span>
         </div>
-        <div>
-          <div class="flex items-center gap-1.5">
-            <h1 class="font-bold text-base tracking-tight text-white">Claudin<span class="text-[#9B8AFB]">.ia</span></h1>
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#9B8AFB]/15 text-[#9B8AFB] font-semibold">PRO</span>
-          </div>
-          <p id="subStatusText" class="text-[11px] text-[#34D399] font-medium">● Auto-Rotação de Tokens Ativa</p>
-        </div>
+        <button onclick="toggleDrawer(false)" class="p-1.5 text-zinc-400 hover:text-white rounded-full">✕</button>
       </div>
 
-      <!-- Pílula Seletora de Motor IA -->
-      <button onclick="switchView('models')" class="px-3.5 py-1.5 rounded-full bg-[#161622] border border-[#28283C] flex items-center gap-2 text-xs font-medium text-zinc-200 active:scale-95 transition">
-        <span id="engineDot" class="w-2 h-2 rounded-full bg-[#34D399]"></span>
-        <span id="activeEnginePill" class="max-w-[115px] truncate">Smart Router</span>
-        <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      <button onclick="resetChat()" class="w-full py-2.5 px-3.5 rounded-full bg-[#1C1C28] hover:bg-[#252535] border border-zinc-700/60 text-xs font-medium flex items-center gap-2 text-zinc-200 transition">
+        <span class="text-base leading-none">+</span> Nova conversa
       </button>
-    </div>
 
-    <!-- Navegação Limpa e Moderna -->
-    <div class="flex items-center justify-between text-xs pt-0.5">
-      <div class="flex items-center gap-1 bg-[#12121A] p-1 rounded-xl border border-[#222230]">
-        <button onclick="switchView('chat')" id="tabBtnChat" class="px-3 py-1 rounded-lg bg-[#9B8AFB] text-[#08080C] font-semibold transition">Workspace</button>
-        <button onclick="switchView('models')" id="tabBtnModels" class="px-3 py-1 rounded-lg text-zinc-400 hover:text-white transition">Tabelas de IA & Skills</button>
+      <div class="space-y-1 pt-2">
+        <p class="text-[11px] font-semibold text-zinc-500 uppercase px-2 mb-1">Painéis do Sistema</p>
+        <button onclick="openView('chat'); toggleDrawer(false);" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-zinc-800/50 text-xs flex items-center gap-2.5 text-zinc-200">
+          <span>✦</span> Conversa Principal
+        </button>
+        <button onclick="openView('models'); toggleDrawer(false);" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-zinc-800/50 text-xs flex items-center justify-between text-zinc-200">
+          <span class="flex items-center gap-2.5"><span>📊</span> Tabela de IAs & Tokens</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#34D399]/15 text-[#34D399]">Auto</span>
+        </button>
+        <button onclick="openView('artifact'); toggleDrawer(false);" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-zinc-800/50 text-xs flex items-center gap-2.5 text-zinc-200">
+          <span>⚡</span> Canvas / Artifact Ativo
+        </button>
       </div>
-
-      <button onclick="switchView('artifact')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#161622] border border-[#28283C] text-[#9B8AFB] font-medium hover:bg-[#1E1E2E] transition">
-        <span>Artifact Studio</span>
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-      </button>
     </div>
+
+    <!-- Rodapé da Gaveta: Conta Google & Status -->
+    <div class="pt-3 border-t border-zinc-800/80 space-y-2">
+      <button onclick="connectGoogle()" class="w-full py-2.5 px-3 rounded-xl bg-white text-zinc-900 font-semibold text-xs flex items-center justify-center gap-2 shadow">
+        <span class="text-blue-600 font-black">G</span>
+        <span id="drawerGoogleText">Conectar Conta Google</span>
+      </button>
+      <div class="flex items-center justify-between text-[11px] text-zinc-500 px-1">
+        <span>Skill Anti-Queda</span>
+        <span class="text-[#34D399] font-medium">● Ativa</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- TOPO MINIMALISTA ESTILO GEMINI + PÍLULA DA SUA IMAGEM -->
+  <header class="px-4 py-3 flex items-center justify-between z-10 bg-[#09090E]/90 backdrop-blur-md">
+    <div class="flex items-center gap-3">
+      <button onclick="toggleDrawer(true)" class="w-9 h-9 rounded-full bg-[#13131C] border border-zinc-800 flex items-center justify-center text-zinc-300 active:scale-95 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h12M4 18h16"/></svg>
+      </button>
+
+      <div onclick="openView('chat')" class="cursor-pointer flex items-center gap-1.5">
+        <span class="font-semibold text-base tracking-tight text-white">Claudin<span class="text-[#9B8AFB]">.ia</span></span>
+      </div>
+    </div>
+
+    <!-- Pílula Direita Estilo "● Geração Auto ⌄" -->
+    <button onclick="openView('models')" class="px-3.5 py-1.5 rounded-full bg-[#13131C] border border-zinc-800/90 flex items-center gap-2 text-xs font-medium text-zinc-200 active:scale-95 transition">
+      <span id="topStatusDot" class="w-2 h-2 rounded-full bg-[#34D399]"></span>
+      <span id="activeModelBadge" class="max-w-[115px] truncate">Auto-Router</span>
+      <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+    </button>
   </header>
 
-  <!-- VIEW 1: WORKSPACE DE CHAT -->
+  <!-- VIEW 1: CONVERSA FLUIDA ESTILO GEMINI -->
   <main id="viewChat" class="flex-1 flex flex-col overflow-hidden">
-    <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+    <div id="messages" class="flex-1 overflow-y-auto px-4 pt-4 pb-6 space-y-6 max-w-2xl w-full mx-auto">
       
-      <!-- Boas-vindas Originais do Claudin.ia -->
-      <div id="welcomeDashboard" class="flex flex-col items-center text-center mt-6 mb-4 px-2">
-        <div class="w-16 h-16 rounded-3xl bg-[#161622] border border-[#2E2E44] flex items-center justify-center mb-4 core-glow">
-          <svg class="w-8 h-8 text-[#9B8AFB]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/>
-          </svg>
+      <!-- Saudação Inicial Estilo Gemini -->
+      <div id="geminiHero" class="mt-10 space-y-6 px-2">
+        <div class="space-y-1.5">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#13131C] border border-zinc-800 text-[11px] text-[#34D399] mb-2">
+            <span>✦</span> <span id="heroTokenBanner">Rotação contínua de tokens ativa</span>
+          </div>
+          <h1 class="text-3xl font-bold tracking-tight">
+            <span class="text-gradient">Olá! Eu sou o Claudin.ia</span>
+          </h1>
+          <p class="text-lg text-zinc-400 font-normal">Como posso ajudar você a criar hoje?</p>
         </div>
 
-        <h2 class="text-xl font-bold text-white mb-1">O que vamos construir no <span class="text-[#9B8AFB]">Claudin.ia</span>?</h2>
-        <p class="text-xs text-[#34D399] font-medium mb-5">
-          Fluxo contínuo ativado · As suas IAs trocam de chave/modelo sem travar
-        </p>
-
-        <!-- Grella de Sugestões Rápidas -->
-        <div class="grid grid-cols-1 gap-2.5 w-full max-w-sm text-left">
-          <button onclick="sendQuickPrompt('Cria um Dashboard Financeiro moderno em HTML com gráficos e tema escuro')" 
-            class="glass-card p-3.5 rounded-2xl hover:border-[#9B8AFB]/60 transition flex items-center justify-between group">
-            <div>
-              <div class="text-xs font-semibold text-white group-hover:text-[#9B8AFB]">📊 Dashboard Financeiro Interativo</div>
-              <div class="text-[11px] text-zinc-400">Gera código completo no Artifact Studio</div>
-            </div>
-            <span class="text-[#9B8AFB] text-sm">→</span>
+        <!-- Chips Horizontais Deslizantes -->
+        <div class="flex gap-2.5 overflow-x-auto no-scrollbar pb-2 pt-2">
+          <button onclick="quickSend('Cria uma calculadora moderna com design escuro e detalhes lilás em HTML')" 
+            class="shrink-0 p-3.5 rounded-2xl bg-[#13131C] hover:bg-[#1C1C28] border border-zinc-800/90 text-left w-44 space-y-2 transition">
+            <div class="w-7 h-7 rounded-full bg-[#9B8AFB]/15 text-[#9B8AFB] flex items-center justify-center text-xs">⚡</div>
+            <p class="text-xs font-medium text-zinc-200 line-clamp-2">Criar calculadora neon interativa</p>
           </button>
 
-          <button onclick="sendQuickPrompt('Cria uma Calculadora Científica completa com histórico e design futurista em HTML')" 
-            class="glass-card p-3.5 rounded-2xl hover:border-[#9B8AFB]/60 transition flex items-center justify-between group">
-            <div>
-              <div class="text-xs font-semibold text-white group-hover:text-[#9B8AFB]">🧮 Calculadora Científica Neon</div>
-              <div class="text-[11px] text-zinc-400">Interface responsiva pronta a usar</div>
-            </div>
-            <span class="text-[#9B8AFB] text-sm">→</span>
+          <button onclick="quickSend('Explica de forma simples e direta como funciona a Inteligência Artificial')" 
+            class="shrink-0 p-3.5 rounded-2xl bg-[#13131C] hover:bg-[#1C1C28] border border-zinc-800/90 text-left w-44 space-y-2 transition">
+            <div class="w-7 h-7 rounded-full bg-[#34D399]/15 text-[#34D399] flex items-center justify-center text-xs">💡</div>
+            <p class="text-xs font-medium text-zinc-200 line-clamp-2">Ideias e explicações diretas</p>
           </button>
-        </div>
 
-        <!-- Botões de Ação Principal -->
-        <div class="w-full max-w-sm mt-5 space-y-2">
-          <button onclick="switchView('models')" class="w-full py-3 rounded-xl btn-primary text-xs shadow-lg">
-            Gerir Tabelas de IAs & Skills de Tokens
-          </button>
-          <button onclick="connectGoogleModal()" class="w-full py-2.5 rounded-xl btn-outline text-xs font-medium hover:bg-zinc-900">
-            Vincular Conta Google / Gemini API
+          <button onclick="openView('models')" 
+            class="shrink-0 p-3.5 rounded-2xl bg-[#13131C] hover:bg-[#1C1C28] border border-zinc-800/90 text-left w-44 space-y-2 transition">
+            <div class="w-7 h-7 rounded-full bg-[#9B8AFB]/15 text-[#9B8AFB] flex items-center justify-center text-xs">📊</div>
+            <p class="text-xs font-medium text-zinc-200 line-clamp-2">Ver tabela de IAs e conectar Google</p>
           </button>
         </div>
       </div>
 
     </div>
 
-    <!-- Input Flutuante Moderno -->
-    <form id="chatForm" class="p-3 bg-[#08080C] border-t border-[#1E1E2C]">
-      <div class="flex items-center gap-2 bg-[#12121A] border border-[#28283C] rounded-2xl p-1.5 focus-within:border-[#9B8AFB] transition">
-        <input id="userInput" type="text" placeholder="Mensagem para Claudin.ia..." 
-          class="flex-1 bg-transparent px-3 py-2 text-sm text-white focus:outline-none" required />
-        <button type="submit" class="px-4 py-2.5 rounded-xl btn-primary text-xs shrink-0 shadow">
-          Gerar ✦
+    <!-- BARRA DE COMANDO FLUTUANTE ESTILO GEMINI -->
+    <div class="px-3 pb-3 pt-1 bg-gradient-to-t from-[#09090E] via-[#09090E] to-transparent">
+      <form id="chatForm" class="max-w-2xl mx-auto bg-[#13131C] border border-zinc-800 focus-within:border-[#9B8AFB]/70 rounded-3xl p-2 pl-4 flex items-center gap-2 shadow-2xl transition">
+        
+        <button type="button" onclick="openView('models')" title="Configurar IAs & Chaves" class="text-zinc-400 hover:text-[#9B8AFB] p-1.5 rounded-full transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
         </button>
-      </div>
-    </form>
+
+        <input id="userInput" type="text" placeholder="Peça ao Claudin.ia..." 
+          class="flex-1 bg-transparent py-2 text-sm text-white placeholder-zinc-500 focus:outline-none" required />
+
+        <button type="submit" class="w-10 h-10 rounded-full bg-[#9B8AFB] text-[#09090E] flex items-center justify-center font-bold shadow-md active:scale-90 transition shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+    </div>
   </main>
 
-  <!-- VIEW 2: TABELAS DE IAS, CONEXÃO GOOGLE & SKILLS DE TOKENS -->
-  <section id="viewModels" class="hidden flex-1 overflow-y-auto p-4 space-y-4">
-    
-    <!-- Painel Google + Rotação de Tokens -->
-    <div class="glass-card p-4 rounded-2xl space-y-3.5">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-sm font-bold text-white">⚡ Skill de Tokens Infinitos</h2>
-          <p class="text-[11px] text-[#34D399]">Mudança automática de IA quando os tokens acabam</p>
-        </div>
-        <button onclick="connectGoogleModal()" class="px-3 py-1.5 rounded-xl bg-white text-zinc-900 font-bold text-xs flex items-center gap-1.5 shadow">
-          <span class="text-blue-600 font-black">G</span>
-          <span id="googleAccountLabel">Conectar Google</span>
-        </button>
+  <!-- VIEW 2: TABELA DE IAS, GOOGLE & SKILLS DE TOKENS -->
+  <section id="viewModels" class="hidden flex-1 overflow-y-auto p-4 space-y-4 max-w-2xl w-full mx-auto">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-base font-bold text-white">Central de IAs & Skills de Tokens</h2>
+        <p class="text-xs text-[#34D399]">Troca invisível de modelo quando os tokens chegam ao limite</p>
       </div>
-
-      <div class="space-y-2 pt-1">
-        <label class="text-[11px] text-zinc-400 font-medium">Pool de Chaves Groq (separe várias por vírgula):</label>
-        <input id="groqKeysInput" type="password" placeholder="gsk_chave1, gsk_chave2..." 
-          class="w-full p-2.5 text-xs rounded-xl bg-[#08080C] border border-[#262638] text-zinc-200 focus:border-[#9B8AFB] focus:outline-none" />
-      </div>
-
-      <div class="space-y-2">
-        <label class="text-[11px] text-zinc-400 font-medium">Pool de Chaves Google Gemini (AIza...):</label>
-        <input id="googleKeysInput" type="password" placeholder="AIzaSy... (Conecta ao Gemini 2.5 / 1.5)" 
-          class="w-full p-2.5 text-xs rounded-xl bg-[#08080C] border border-[#262638] text-zinc-200 focus:border-[#9B8AFB] focus:outline-none" />
-      </div>
-
-      <button onclick="saveAndSyncModels()" class="w-full py-3 rounded-xl btn-primary text-xs">
-        Guardar Pool de Tokens & Atualizar Tabela
+      <button onclick="openView('chat')" class="px-3.5 py-1.5 rounded-full bg-[#13131C] border border-zinc-800 text-xs text-zinc-300">
+        Voltar
       </button>
     </div>
 
-    <!-- Tabela Completa de Modelos -->
-    <div class="glass-card rounded-2xl overflow-hidden">
-      <div class="p-3.5 border-b border-[#262638] flex justify-between items-center">
-        <span class="text-xs font-bold text-white">Matriz de IAs Conectadas</span>
-        <span id="totalModelsBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-[#34D399]/15 text-[#34D399] font-medium">Sincronizado</span>
+    <!-- Card de Chaves e Google -->
+    <div class="bg-[#13131C] border border-zinc-800/90 p-4 rounded-3xl space-y-3.5">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold text-[#9B8AFB]">Conexão Google & Pool de Chaves</span>
+        <button onclick="connectGoogle()" class="px-3 py-1.5 rounded-full bg-white text-zinc-900 font-bold text-xs flex items-center gap-1.5">
+          <span class="text-blue-600 font-black">G</span>
+          <span id="googleBtnLabel">Conectar Google</span>
+        </button>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="text-[11px] text-zinc-400">Chaves Groq (separe várias por vírgula para nunca acabar):</label>
+        <input id="groqKeysInput" type="password" placeholder="gsk_chave1, gsk_chave2..." 
+          class="w-full p-3 text-xs rounded-2xl bg-[#09090E] border border-zinc-800 text-zinc-200 focus:border-[#9B8AFB] focus:outline-none" />
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="text-[11px] text-zinc-400">Chaves Google Gemini (AIza... do Google AI Studio):</label>
+        <input id="googleKeysInput" type="password" placeholder="AIzaSy..." 
+          class="w-full p-3 text-xs rounded-2xl bg-[#09090E] border border-zinc-800 text-zinc-200 focus:border-[#9B8AFB] focus:outline-none" />
+      </div>
+
+      <button onclick="saveAndSyncModels()" class="w-full py-3 rounded-2xl bg-[#9B8AFB] text-[#09090E] font-bold text-xs shadow">
+        Guardar Chaves & Sincronizar Tabelas
+      </button>
+    </div>
+
+    <!-- Tabela de Todas as IAs -->
+    <div class="bg-[#13131C] border border-zinc-800/90 rounded-3xl overflow-hidden">
+      <div class="p-3.5 border-b border-zinc-800 flex justify-between items-center">
+        <span class="text-xs font-bold text-zinc-200">Tabela de Todas as IAs</span>
+        <span id="modelCountText" class="text-[11px] text-[#34D399]">Sincronizado</span>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-xs">
           <thead>
-            <tr class="bg-[#08080C] text-zinc-400 border-b border-[#262638]">
-              <th class="p-3">Provedor</th>
+            <tr class="bg-[#09090E] text-zinc-500 border-b border-zinc-800">
+              <th class="p-3">Rede</th>
               <th class="p-3">Modelo</th>
-              <th class="p-3">Status de Tokens</th>
-              <th class="p-3 text-right">Prioridade</th>
+              <th class="p-3">Status</th>
+              <th class="p-3 text-right">Modo</th>
             </tr>
           </thead>
-          <tbody id="aiTableBody" class="divide-y divide-[#1E1E2C]"></tbody>
+          <tbody id="aiTableBody" class="divide-y divide-zinc-800/60"></tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <!-- VIEW 3: ARTIFACT STUDIO -->
-  <section id="viewArtifact" class="hidden flex-1 flex flex-col bg-[#08080C] overflow-hidden">
-    <div class="p-2.5 bg-[#12121A] border-b border-[#262638] flex justify-between items-center px-4">
+  <!-- VIEW 3: CANVAS / ARTIFACT EM TELA CHEIA -->
+  <section id="viewArtifact" class="hidden flex-1 flex flex-col bg-[#09090E] overflow-hidden">
+    <div class="px-4 py-2.5 bg-[#13131C] border-b border-zinc-800 flex justify-between items-center">
       <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-[#9B8AFB]"></span>
-        <span class="text-xs text-white font-semibold">Artifact Studio · Execução em Tempo Real</span>
+        <span class="text-[#9B8AFB]">✦</span>
+        <span class="text-xs font-semibold text-white">Canvas Interativo · Claudin.ia</span>
       </div>
-      <button onclick="switchView('chat')" class="px-3 py-1 rounded-lg btn-outline text-xs">
-        Voltar ao Chat
+      <button onclick="openView('chat')" class="px-3.5 py-1 rounded-full bg-[#1C1C28] border border-zinc-700 text-xs text-zinc-200">
+        Voltar à conversa
       </button>
     </div>
     <iframe id="previewFrame" class="flex-1 w-full h-full border-0 bg-white"></iframe>
   </section>
 
   <script>
-    const SYSTEM_PROMPT = `És o Claudin.ia, uma plataforma avançada de IA. Quando o utilizador pedir uma interface, calculadora, jogo, dashboard ou site, explica de forma concisa e coloca TODO o código HTML+CSS(Tailwind)+JS funcional dentro da tag <antArtifact>...</antArtifact>. Não uses blocos markdown dentro da tag, apenas o código HTML puro começando por <!DOCTYPE html>.`;
+    const SYSTEM_PROMPT = `Você é o Claudin.ia. O seu estilo de conversa é igual ao do Gemini: claro, direto, inteligente, empático e bem estruturado.
+Sempre que o utilizador pedir para criar uma calculadora, jogo, página web, dashboard ou aplicativo visual, explique brevemente a solução e coloque TODO o código HTML+CSS(Tailwind)+JS funcional dentro da tag <antArtifact>...</antArtifact>. Não use blocos markdown dentro da tag, apenas o código HTML puro começando por <!DOCTYPE html>.`;
 
     let aiModelsPool = [
       { provider: 'Groq', id: 'llama-3.1-8b-instant', cooldown: false },
@@ -242,40 +256,49 @@
     groqInput.value = localStorage.getItem('groq_keys_pool') || localStorage.getItem('groq_key') || '';
     googleInput.value = localStorage.getItem('google_keys_pool') || '';
 
-    if (localStorage.getItem('google_user')) {
-      document.getElementById('googleAccountLabel').textContent = localStorage.getItem('google_user').split('@')[0];
+    function updateGoogleLabels() {
+      const user = localStorage.getItem('google_user');
+      if (user) {
+        const shortName = user.split('@')[0];
+        document.getElementById('googleBtnLabel').textContent = shortName;
+        document.getElementById('drawerGoogleText').textContent = 'Google: ' + shortName;
+      }
+    }
+    updateGoogleLabels();
+
+    function toggleDrawer(open) {
+      document.getElementById('drawerOverlay').classList.toggle('hidden', !open);
+      document.getElementById('sideDrawer').classList.toggle('-translate-x-full', !open);
     }
 
-    function switchView(view) {
+    function openView(view) {
       document.getElementById('viewChat').classList.toggle('hidden', view !== 'chat');
       document.getElementById('viewModels').classList.toggle('hidden', view !== 'models');
       document.getElementById('viewArtifact').classList.toggle('hidden', view !== 'artifact');
-
-      document.getElementById('tabBtnChat').className = view === 'chat'
-        ? 'px-3 py-1 rounded-lg bg-[#9B8AFB] text-[#08080C] font-semibold transition'
-        : 'px-3 py-1 rounded-lg text-zinc-400 hover:text-white transition';
-      document.getElementById('tabBtnModels').className = view === 'models'
-        ? 'px-3 py-1 rounded-lg bg-[#9B8AFB] text-[#08080C] font-semibold transition'
-        : 'px-3 py-1 rounded-lg text-zinc-400 hover:text-white transition';
-
       if (view === 'models') renderModelsTable();
     }
 
-    function sendQuickPrompt(text) {
+    function resetChat() {
+      toggleDrawer(false);
+      openView('chat');
+      location.reload();
+    }
+
+    function quickSend(text) {
       document.getElementById('userInput').value = text;
       document.getElementById('chatForm').dispatchEvent(new Event('submit'));
     }
 
-    function connectGoogleModal() {
-      const input = prompt('Conectar ao Google no Claudin.ia:\n\n• Cole a sua chave API do Google Gemini (AIza...)\n• OU digite o seu e-mail Google para identificar a sessão:');
-      if (!input) return;
-      if (input.trim().startsWith('AIza')) {
-        googleInput.value = input.trim();
+    function connectGoogle() {
+      const val = prompt('Conectar ao Google no Claudin.ia:\n\n• Cole a sua chave API do Google Gemini (AIza...)\n• OU digite o seu e-mail Google:');
+      if (!val) return;
+      if (val.trim().startsWith('AIza')) {
+        googleInput.value = val.trim();
         saveAndSyncModels();
-        alert('Chave Google Gemini ativada na rotação automática de tokens!');
+        alert('Google Gemini conectado à rotação automática de tokens!');
       } else {
-        localStorage.setItem('google_user', input.trim());
-        document.getElementById('googleAccountLabel').textContent = input.trim().split('@')[0];
+        localStorage.setItem('google_user', val.trim());
+        updateGoogleLabels();
       }
     }
 
@@ -318,31 +341,31 @@
       renderModelsTable();
     }
 
-    function setPriorityModel(id) {
+    function chooseModel(id) {
       preferredModelId = id;
-      document.getElementById('activeEnginePill').textContent = id;
+      document.getElementById('activeModelBadge').textContent = id;
       renderModelsTable();
-      switchView('chat');
+      openView('chat');
     }
 
     function renderModelsTable() {
       const tbody = document.getElementById('aiTableBody');
-      document.getElementById('totalModelsBadge').textContent = `${aiModelsPool.length} Modelos na Fila`;
+      document.getElementById('modelCountText').textContent = `${aiModelsPool.length} IAs Ativas`;
 
       tbody.innerHTML = aiModelsPool.map(m => {
-        const isCurrent = preferredModelId === m.id;
+        const isSelected = preferredModelId === m.id;
         return `
           <tr class="hover:bg-white/5 transition">
             <td class="p-3 font-bold ${m.provider === 'Google' ? 'text-sky-400' : 'text-[#9B8AFB]'}">${m.provider}</td>
             <td class="p-3 font-mono text-[11px] text-zinc-200">${m.id}</td>
             <td class="p-3">
               <span class="text-[11px] font-medium ${m.cooldown ? 'text-amber-400' : 'text-[#34D399]'}">
-                ${m.cooldown ? '↻ Alternado (Limite)' : isCurrent ? '● Primário' : '● Pronto (Backup)'}
+                ${m.cooldown ? '↻ Alternado' : isSelected ? '● Principal' : '● Backup OK'}
               </span>
             </td>
             <td class="p-3 text-right">
-              <button onclick="setPriorityModel('${m.id}')" class="px-3 py-1 rounded-lg ${isCurrent ? 'btn-primary' : 'btn-outline'} text-[11px]">
-                ${isCurrent ? 'Fixado' : 'Priorizar'}
+              <button onclick="chooseModel('${m.id}')" class="px-3 py-1 rounded-full ${isSelected ? 'bg-[#9B8AFB] text-[#09090E] font-bold' : 'bg-[#1C1C28] text-zinc-300'} text-[11px]">
+                ${isSelected ? 'Em Uso' : 'Usar'}
               </button>
             </td>
           </tr>
@@ -350,12 +373,12 @@
       }).join('');
     }
 
-    async function executeSeamlessFailover(prompt, onProgress) {
+    async function askWithAutoFailover(prompt, onProgress) {
       const groqKeys = getKeys('groq');
       const googleKeys = getKeys('google');
 
       if (groqKeys.length === 0 && googleKeys.length === 0) {
-        throw new Error('Adicione pelo menos uma chave Groq (gsk_...) ou Google (AIza...) na aba Tabelas de IA & Skills.');
+        throw new Error('Para começar, toque no botão abaixo e cole a sua chave Groq (gsk_...) ou Google Gemini (AIza...).');
       }
 
       let queue = [...aiModelsPool];
@@ -369,7 +392,7 @@
         if (modelObj.provider === 'Groq' && groqKeys.length > 0) {
           for (const key of groqKeys) {
             try {
-              onProgress(`A processar via ${modelObj.id}...`);
+              onProgress(`Pensando com ${modelObj.id}...`);
               const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -390,13 +413,11 @@
               if (!res.ok || data.error) {
                 modelObj.cooldown = true;
                 lastErr = data.error?.message || res.statusText;
-                document.getElementById('subStatusText').textContent = `↻ Trocou de ${modelObj.id} automaticamente`;
                 continue;
               }
 
               modelObj.cooldown = false;
-              document.getElementById('activeEnginePill').textContent = modelObj.id;
-              document.getElementById('subStatusText').textContent = `● Respondido com ${modelObj.id}`;
+              document.getElementById('activeModelBadge').textContent = modelObj.id;
               return { reply: data.choices[0].message.content, usedModel: modelObj.id };
             } catch (e) {
               lastErr = e.message;
@@ -408,7 +429,7 @@
         if (modelObj.provider === 'Google' && googleKeys.length > 0) {
           for (const gKey of googleKeys) {
             try {
-              onProgress(`A processar via Google ${modelObj.id}...`);
+              onProgress(`Pensando com Google ${modelObj.id}...`);
               const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelObj.id}:generateContent?key=${gKey}`;
               const res = await fetch(url, {
                 method: 'POST',
@@ -426,7 +447,7 @@
               const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
               if (text) {
                 modelObj.cooldown = false;
-                document.getElementById('activeEnginePill').textContent = modelObj.id;
+                document.getElementById('activeModelBadge').textContent = modelObj.id;
                 return { reply: text, usedModel: modelObj.id };
               }
             } catch (e) {
@@ -437,7 +458,7 @@
         }
       }
 
-      throw new Error(lastErr || 'Todas as chaves atingiram o limite momentâneo.');
+      throw new Error(lastErr || 'Limite de tokens atingido em todas as filas.');
     }
 
     document.getElementById('chatForm').addEventListener('submit', async (e) => {
@@ -447,52 +468,76 @@
       if (!prompt) return;
       input.value = '';
 
-      const welcome = document.getElementById('welcomeDashboard');
-      if (welcome) welcome.style.display = 'none';
+      const hero = document.getElementById('geminiHero');
+      if (hero) hero.style.display = 'none';
 
       const msgContainer = document.getElementById('messages');
+
+      // Balão do Utilizador (Estilo Gemini: Pílula alinhada à direita)
       msgContainer.innerHTML += `
-        <div class="bg-[#1A1A26] border border-[#2E2E42] text-white p-3.5 rounded-2xl ml-auto max-w-[85%] text-xs">
-          ${prompt}
+        <div class="flex justify-end">
+          <div class="bg-[#1C1C28] text-zinc-100 px-4 py-3 rounded-3xl rounded-tr-sm max-w-[82%] text-sm leading-relaxed">
+            ${prompt}
+          </div>
         </div>`;
 
-      const botDiv = document.createElement('div');
-      botDiv.className = 'glass-card p-4 rounded-2xl max-w-[92%] text-xs text-zinc-200 whitespace-pre-wrap leading-relaxed';
-      botDiv.textContent = 'A sincronizar IAs...';
-      msgContainer.appendChild(botDiv);
+      // Resposta do Claudin.ia (Estilo Gemini: Estrela à esquerda + Texto fluido sem caixa)
+      const responseWrapper = document.createElement('div');
+      responseWrapper.className = 'flex items-start gap-3.5 pr-2';
+      responseWrapper.innerHTML = `
+        <div class="w-7 h-7 rounded-full bg-[#9B8AFB]/15 flex items-center justify-center shrink-0 mt-0.5">
+          <span class="star-icon text-[#9B8AFB] text-sm star-thinking">✦</span>
+        </div>
+        <div class="response-body flex-1 text-sm text-zinc-200 leading-relaxed whitespace-pre-wrap pt-0.5">
+          <span class="text-zinc-400 text-xs">A iniciar síntese...</span>
+        </div>
+      `;
+      msgContainer.appendChild(responseWrapper);
       msgContainer.scrollTop = msgContainer.scrollHeight;
 
+      const starEl = responseWrapper.querySelector('.star-icon');
+      const bodyEl = responseWrapper.querySelector('.response-body');
+
       try {
-        const { reply, usedModel } = await executeSeamlessFailover(prompt, (st) => {
-          botDiv.innerHTML = `<span class="text-[#9B8AFB] font-medium">${st}</span>`;
+        const { reply, usedModel } = await askWithAutoFailover(prompt, (st) => {
+          bodyEl.innerHTML = `<span class="text-[#9B8AFB] text-xs font-medium">${st}</span>`;
         });
+
+        starEl.classList.remove('star-thinking');
 
         const match = reply.match(/<antArtifact>([\s\S]*?)<\/antArtifact>/);
         if (match) {
           document.getElementById('previewFrame').srcdoc = match[1].trim();
-          botDiv.innerHTML = `
-            <div class="flex items-center justify-between text-[11px] text-[#34D399] font-medium mb-2 pb-1.5 border-b border-[#262638]">
-              <span>✦ Motor: ${usedModel}</span>
-              <span>Artifact Pronto</span>
+          const cleanText = reply.replace(/<antArtifact>[\s\S]*?<\/antArtifact>/, '').trim();
+          bodyEl.innerHTML = `
+            <div class="text-[11px] text-[#34D399] font-medium mb-1">Claudin.ia · ${usedModel}</div>
+            <div>${cleanText}</div>
+            <!-- Card estilo Gemini Canvas -->
+            <div onclick="openView('artifact')" class="mt-3 p-3.5 rounded-2xl bg-[#13131C] border border-[#9B8AFB]/40 hover:border-[#9B8AFB] flex items-center justify-between cursor-pointer transition">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-[#9B8AFB] text-[#09090E] flex items-center justify-center font-bold">⚡</div>
+                <div>
+                  <div class="text-xs font-bold text-white">Aplicação Interativa Pronta</div>
+                  <div class="text-[11px] text-[#34D399]">Toque para executar em ecrã inteiro</div>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-[#9B8AFB] px-2">Abrir ↗</span>
             </div>
-            <div>${reply.replace(/<antArtifact>[\s\S]*?<\/antArtifact>/, '')}</div>
-            <button onclick="switchView('artifact')" class="mt-3 w-full py-3 rounded-xl btn-primary text-xs shadow-lg">
-              Abrir Aplicação no Artifact Studio ↗
-            </button>
           `;
         } else {
-          botDiv.innerHTML = `
-            <div class="text-[11px] text-[#34D399] font-medium mb-1.5">✦ Motor: ${usedModel}</div>
+          bodyEl.innerHTML = `
+            <div class="text-[11px] text-[#34D399] font-medium mb-1">Claudin.ia · ${usedModel}</div>
             <div>${reply}</div>
           `;
         }
       } catch (err) {
-        botDiv.innerHTML = `
-          <div class="space-y-2">
-            <div class="text-sm font-bold text-[#9B8AFB]">Ajuste de Chave Necessário</div>
+        starEl.classList.remove('star-thinking');
+        bodyEl.innerHTML = `
+          <div class="p-4 rounded-2xl bg-[#13131C] border border-zinc-800 space-y-2.5">
+            <div class="text-xs font-semibold text-[#9B8AFB]">Configuração rápida necessária</div>
             <div class="text-xs text-zinc-400">${err.message}</div>
-            <button onclick="switchView('models')" class="w-full py-2.5 rounded-xl btn-primary text-xs mt-2">
-              Abrir Tabelas de IA & Configurar Chaves
+            <button onclick="openView('models')" class="px-4 py-2 rounded-full bg-[#9B8AFB] text-[#09090E] font-bold text-xs">
+              Configurar Chaves & IAs
             </button>
           </div>
         `;
