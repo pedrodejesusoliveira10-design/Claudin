@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Clone Mobile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#F9F9F8] text-stone-800 h-screen flex flex-col overflow-hidden font-sans">
+  <!-- Topo Mobile -->
+  <header class="p-3 bg-white border-b border-stone-200 flex flex-col gap-2">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-1.5">
+        <span class="text-amber-600 font-bold text-lg">✦</span>
+        <h1 class="font-serif font-semibold text-base">Claude Cloud Mobile</h1>
+      </div>
+      <!-- Botões para alternar abas no telemóvel -->
+      <div class="flex bg-stone-200 p-0.5 rounded-lg text-xs font-medium">
+        <button onclick="switchTab('chat')" id="btnChat" class="px-3 py-1 rounded-md bg-white shadow-sm">Chat</button>
+        <button onclick="switchTab('artifact')" id="btnArt" class="px-3 py-1 rounded-md text-stone-600">Artifact ✨</button>
+      </div>
+    </div>
+    <input id="apiKey" type="password" placeholder="Cole aqui a sua chave GROQ (gsk_...)" 
+      class="text-xs p-2 border border-stone-300 rounded-lg w-full bg-stone-50" />
+  </header>
+
+  <!-- Aba 1: Chat -->
+  <div id="tabChat" class="flex-1 flex flex-col overflow-hidden">
+    <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-3 font-serif text-sm">
+      <div class="text-stone-500 text-center mt-10">
+        <p class="text-lg text-stone-800 mb-1">Como posso ajudar hoje?</p>
+        <p class="text-xs font-sans">1. Cole a sua chave gsk_ no topo.<br>2. Peça: "Cria um jogo da memória em HTML"</p>
+      </div>
+    </div>
+    <form id="chatForm" class="p-3 bg-white border-t border-stone-200 flex gap-2">
+      <input id="userInput" type="text" placeholder="Peça um app, calculadora ou jogo..." 
+        class="flex-1 p-3 rounded-xl border border-stone-300 bg-[#F9F9F8] font-sans text-sm" required />
+      <button type="submit" class="px-4 py-3 bg-amber-700 text-white rounded-xl text-sm font-medium">Enviar</button>
+    </form>
+  </div>
+
+  <!-- Aba 2: Artifact (Ecrã inteiro no telemóvel) -->
+  <div id="tabArtifact" class="hidden flex-1 flex flex-col bg-white overflow-hidden">
+    <iframe id="previewFrame" class="flex-1 w-full h-full border-0"></iframe>
+  </div>
+
+  <script>
+    const SYSTEM_PROMPT = `És um assistente estilo Claude. Sempre que o utilizador pedir uma interface, calculadora, jogo ou página, responde com uma breve explicação e coloca TODO o código HTML+CSS(Tailwind)+JS funcional dentro da tag <antArtifact>...</antArtifact>. Não uses blocos markdown dentro da tag, apenas o código HTML completo iniciando com <!DOCTYPE html>.`;
+
+    function switchTab(tab) {
+      const isChat = tab === 'chat';
+      document.getElementById('tabChat').classList.toggle('hidden', !isChat);
+      document.getElementById('tabArtifact').classList.toggle('hidden', isChat);
+      document.getElementById('btnChat').className = isChat ? 'px-3 py-1 rounded-md bg-white shadow-sm' : 'px-3 py-1 rounded-md text-stone-600';
+      document.getElementById('btnArt').className = !isChat ? 'px-3 py-1 rounded-md bg-amber-600 text-white shadow-sm' : 'px-3 py-1 rounded-md text-stone-600';
+    }
+
+    document.getElementById('chatForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const apiKey = document.getElementById('apiKey').value.trim();
+      if (!apiKey) return alert('Cole primeiro a sua chave GROQ_API_KEY na caixa do topo!');
+
+      const input = document.getElementById('userInput');
+      const prompt = input.value.trim();
+      input.value = '';
+
+      const msgContainer = document.getElementById('messages');
+      msgContainer.innerHTML += `<div class="bg-stone-200 p-3 rounded-2xl ml-auto max-w-[85%] font-sans text-xs">${prompt}</div>`;
+      
+      const botDiv = document.createElement('div');
+      botDiv.className = 'bg-white border border-stone-200 p-3.5 rounded-2xl max-w-[90%] shadow-sm whitespace-pre-wrap text-sm';
+      botDiv.textContent = 'A criar código na nuvem...';
+      msgContainer.appendChild(botDiv);
+      msgContainer.scrollTop = msgContainer.scrollHeight;
+
+      try {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [{ role: 'system', content: SYSTEM_PROMPT }, { role: 'user', content: prompt }]
+          })
+        });
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || 'Erro ao gerar resposta.';
+        const match = reply.match(/<antArtifact>([\s\S]*?)<\/antArtifact>/);
+        if (match) {
+          document.getElementById('previewFrame').srcdoc = match[1].trim();
+          botDiv.innerHTML = reply.replace(/<antArtifact>[\s\S]*?<\/antArtifact>/, '') + 
+            `<br><button onclick="switchTab('artifact')" class="mt-2 w-full py-2 bg-amber-100 text-amber-900 rounded-lg font-sans text-xs font-bold">▶ Tocar para abrir o App criado (Artifact)</button>`;
+        } else {
+          botDiv.textContent = reply;
+        }
+      } catch (err) {
+        botDiv.textContent = 'Erro: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
