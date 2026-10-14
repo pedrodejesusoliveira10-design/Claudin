@@ -19,8 +19,13 @@
         <button onclick="switchTab('artifact')" id="btnArt" class="px-3 py-1 rounded-md text-stone-600">Artifact ✨</button>
       </div>
     </div>
-    <input id="apiKey" type="password" placeholder="Cole aqui a sua chave GROQ (gsk_...)" 
-      class="text-xs p-2 border border-stone-300 rounded-lg w-full bg-stone-50" />
+    <div class="flex gap-2">
+      <input id="apiKey" type="password" placeholder="Chave GROQ (gsk_...)" 
+        class="text-xs p-2 border border-stone-300 rounded-lg flex-1 bg-stone-50" />
+      <select id="modelSelect" class="text-xs p-2 border border-stone-300 rounded-lg bg-stone-50 max-w-[150px] truncate">
+        <option value="">Auto (Detetar modelo)</option>
+      </select>
+    </div>
   </header>
 
   <!-- Aba 1: Chat -->
@@ -28,7 +33,7 @@
     <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-3 font-serif text-sm">
       <div class="text-stone-500 text-center mt-10">
         <p class="text-lg text-stone-800 mb-1">Como posso ajudar hoje?</p>
-        <p class="text-xs font-sans">1. Cole a sua chave gsk_ na caixa do topo.<br>2. Escreva o seu pedido na barra lá em baixo.</p>
+        <p class="text-xs font-sans">O sistema escolhe automaticamente o melhor modelo disponível na sua chave Groq!</p>
       </div>
     </div>
     <form id="chatForm" class="p-3 bg-white border-t border-stone-200 flex gap-2">
@@ -46,12 +51,43 @@
   <script>
     const SYSTEM_PROMPT = `És um assistente estilo Claude. Sempre que o utilizador pedir uma interface, calculadora, jogo ou página, responde com uma breve explicação e coloca TODO o código HTML+CSS(Tailwind)+JS funcional dentro da tag <antArtifact>...</antArtifact>. Não uses blocos markdown dentro da tag, apenas o código HTML completo iniciando com <!DOCTYPE html>.`;
 
-    // Guarda a chave no telemóvel para não precisar de colar sempre
     const apiKeyInput = document.getElementById('apiKey');
+    const modelSelect = document.getElementById('modelSelect');
+
     apiKeyInput.value = localStorage.getItem('groq_key') || '';
+
+    async function loadModels() {
+      const key = apiKeyInput.value.replace(/\s+/g, '');
+      if (!key.startsWith('gsk_')) return;
+      try {
+        const res = await fetch('https://api.groq.com/openai/v1/models', {
+          headers: { 'Authorization': 'Bearer ' + key }
+        });
+        const data = await res.json();
+        if (data.data && Array.isArray(data.data)) {
+          // Filtra modelos de texto/chat (ignora modelos de áudio/whisper/guard)
+          const chatModels = data.data
+            .map(m => m.id)
+            .filter(id => !id.includes('whisper') && !id.includes('guard') && !id.includes('tts'));
+          
+          if (chatModels.length > 0) {
+            modelSelect.innerHTML = chatModels.map(id => `<option value="${id}">${id}</option>`).join('');
+            // Dá preferência a modelos Llama ou Qwen ou DeepSeek mais potentes se existirem
+            const preferred = chatModels.find(id => id.includes('llama') || id.includes('qwen') || id.includes('deepseek')) || chatModels[0];
+            modelSelect.value = preferred;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     apiKeyInput.addEventListener('input', () => {
       localStorage.setItem('groq_key', apiKeyInput.value.trim());
+      loadModels();
     });
+
+    if (apiKeyInput.value) loadModels();
 
     function switchTab(tab) {
       const isChat = tab === 'chat';
@@ -63,11 +99,15 @@
 
     document.getElementById('chatForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      // Remove espaços ou quebras de linha invisíveis ao colar no telemóvel
       const apiKey = apiKeyInput.value.replace(/\s+/g, '');
       if (!apiKey.startsWith('gsk_')) {
-        return alert('Atenção: Cole a sua chave começada por gsk_ na caixa de cima (no topo do ecrã)!');
+        return alert('Atenção: Cole a sua chave começada por gsk_ na caixa de cima!');
       }
+
+      if (!modelSelect.value) {
+        await loadModels();
+      }
+      const chosenModel = modelSelect.value || 'llama3-8b-8192';
 
       const input = document.getElementById('userInput');
       const prompt = input.value.trim();
@@ -78,7 +118,7 @@
       
       const botDiv = document.createElement('div');
       botDiv.className = 'bg-white border border-stone-200 p-3.5 rounded-2xl max-w-[90%] shadow-sm whitespace-pre-wrap text-sm';
-      botDiv.textContent = 'A criar código na nuvem...';
+      botDiv.textContent = `A criar com ${chosenModel}...`;
       msgContainer.appendChild(botDiv);
       msgContainer.scrollTop = msgContainer.scrollHeight;
 
@@ -90,7 +130,7 @@
             'Authorization': 'Bearer ' + apiKey
           },
           body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
+            model: chosenModel,
             messages: [
               { role: 'system', content: SYSTEM_PROMPT },
               { role: 'user', content: prompt }
