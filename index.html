@@ -3,198 +3,235 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Claudin.ia</title>
+  <title>Claudin.ia — Inteligência Artificial Contínua</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    :root {
+      --bg-deep: #08080C;
+      --bg-card: #12121A;
+      --bg-pill: #1A1A26;
+      --border-subtle: #262638;
+      --accent-lilac: #9B8AFB;
+      --accent-emerald: #34D399;
+    }
     body {
-      background-color: #070709;
-      color: #F4F4F6;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-deep);
+      color: #F3F4F6;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
     }
-    .lilac-glow {
-      filter: drop-shadow(0 0 28px rgba(155, 138, 251, 0.35));
+    .ambient-glow {
+      background: radial-gradient(circle at 50% 0%, rgba(155, 138, 251, 0.14) 0%, rgba(8, 8, 12, 0) 70%);
     }
-    .btn-lilac {
-      background-color: #9B8AFB;
-      color: #09090D;
+    .core-glow {
+      box-shadow: 0 0 40px -5px rgba(155, 138, 251, 0.35);
     }
-    .btn-lilac:hover {
-      background-color: #8A76F9;
+    .glass-card {
+      background: rgba(18, 18, 26, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
     }
-    .pill-dark {
-      background-color: #16161D;
-      border: 1px solid #262632;
+    .btn-primary {
+      background-color: var(--accent-lilac);
+      color: #08080C;
+      font-weight: 600;
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--border-subtle);
+      color: #E5E7EB;
     }
   </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden select-none">
+<body class="h-screen flex flex-col overflow-hidden ambient-glow select-none">
 
-  <!-- TOPO ESTILO IMAGEM DE REFERÊNCIA -->
-  <header class="pt-3 pb-2 px-4 bg-[#070709] border-b border-zinc-900 flex flex-col gap-2.5 z-10">
+  <!-- HEADER ORIGINAL COM ESTÉTICA DARK/LILÁS -->
+  <header class="px-4 pt-3 pb-2.5 border-b border-[#1E1E2C] flex flex-col gap-2.5 z-10 bg-[#08080C]/80 backdrop-blur-md">
     <div class="flex items-center justify-between">
-      <!-- Botão Circular Esquerdo + Avatar + Nome Claudin.ia -->
+      <!-- Marca Claudin.ia -->
       <div class="flex items-center gap-2.5">
-        <button onclick="switchTab('chat')" class="w-9 h-9 rounded-full bg-[#16161D] border border-zinc-800 flex items-center justify-center text-zinc-300 active:scale-95 transition">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-        </button>
-
-        <div class="w-8 h-8 rounded-lg bg-[#9B8AFB]/15 border border-[#9B8AFB]/40 flex items-center justify-center text-[#9B8AFB] font-bold text-sm">
-          ✦
+        <div class="w-9 h-9 rounded-2xl bg-[#1A1A26] border border-[#2E2E42] flex items-center justify-center core-glow">
+          <svg class="w-5 h-5 text-[#9B8AFB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v3m0 12v3M3 12h3m12 0h3m-2.636-6.364l-2.122 2.122M8.758 15.242l-2.122 2.122m0-12.728l2.122 2.122m6.484 6.484l2.122 2.122"/>
+            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+          </svg>
         </div>
-
-        <h1 class="font-bold text-base tracking-wide text-white uppercase">Claudin.ia</h1>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="font-bold text-base tracking-tight text-white">Claudin<span class="text-[#9B8AFB]">.ia</span></h1>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#9B8AFB]/15 text-[#9B8AFB] font-semibold">PRO</span>
+          </div>
+          <p id="subStatusText" class="text-[11px] text-[#34D399] font-medium">● Auto-Rotação de Tokens Ativa</p>
+        </div>
       </div>
 
-      <!-- Pílula Direita Estilo "● Geração 2 ⌄" -->
-      <button onclick="switchTab('models')" class="pill-dark px-3.5 py-1.5 rounded-full flex items-center gap-2 text-xs font-medium text-zinc-200 active:scale-95 transition">
-        <span id="statusDot" class="w-2 h-2 rounded-full bg-[#4ADE80]"></span>
-        <span id="activeModelPill" class="max-w-[110px] truncate">Geração Auto</span>
+      <!-- Pílula Seletora de Motor IA -->
+      <button onclick="switchView('models')" class="px-3.5 py-1.5 rounded-full bg-[#161622] border border-[#28283C] flex items-center gap-2 text-xs font-medium text-zinc-200 active:scale-95 transition">
+        <span id="engineDot" class="w-2 h-2 rounded-full bg-[#34D399]"></span>
+        <span id="activeEnginePill" class="max-w-[115px] truncate">Smart Router</span>
         <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
     </div>
 
-    <!-- Sub-barra Estilo "Youtube · Flow Podcast · 2h 18   [↗ Abrir original]" -->
-    <div class="flex items-center justify-between text-xs text-zinc-500 px-1">
-      <div class="flex items-center gap-1.5 truncate">
-        <span onclick="switchTab('chat')" id="navChat" class="text-[#9B8AFB] font-medium cursor-pointer">Chat IA</span>
-        <span>·</span>
-        <span onclick="switchTab('models')" id="navModels" class="hover:text-zinc-300 cursor-pointer">IAs & Skills</span>
-        <span>·</span>
-        <span id="tokenStatusText" class="text-[#4ADE80]">Tokens Ativos</span>
+    <!-- Navegação Limpa e Moderna -->
+    <div class="flex items-center justify-between text-xs pt-0.5">
+      <div class="flex items-center gap-1 bg-[#12121A] p-1 rounded-xl border border-[#222230]">
+        <button onclick="switchView('chat')" id="tabBtnChat" class="px-3 py-1 rounded-lg bg-[#9B8AFB] text-[#08080C] font-semibold transition">Workspace</button>
+        <button onclick="switchView('models')" id="tabBtnModels" class="px-3 py-1 rounded-lg text-zinc-400 hover:text-white transition">Tabelas de IA & Skills</button>
       </div>
 
-      <button onclick="switchTab('artifact')" class="flex items-center gap-1 text-[#9B8AFB] font-medium hover:underline shrink-0">
+      <button onclick="switchView('artifact')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#161622] border border-[#28283C] text-[#9B8AFB] font-medium hover:bg-[#1E1E2E] transition">
+        <span>Artifact Studio</span>
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-        <span>Abrir Artifact</span>
       </button>
     </div>
   </header>
 
-  <!-- ABA 1: CHAT CENTRAL (COM O DESIGN DO ÍCONE LILÁS CENTRAL) -->
-  <div id="tabChat" class="flex-1 flex flex-col overflow-hidden">
-    <div id="messages" class="flex-1 overflow-y-auto p-5 space-y-4">
+  <!-- VIEW 1: WORKSPACE DE CHAT -->
+  <main id="viewChat" class="flex-1 flex flex-col overflow-hidden">
+    <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-4">
       
-      <!-- Estado Inicial Idêntico à Imagem -->
-      <div id="heroEmptyState" class="flex flex-col items-center justify-center text-center mt-12 mb-6 px-4">
-        <!-- Ícone Central Lilás com Brilho (Estilo Câmara/IA da foto) -->
-        <div class="lilac-glow mb-6">
-          <svg class="w-24 h-24 text-[#9B8AFB]" viewBox="0 0 120 90" fill="currentColor">
-            <rect x="10" y="10" width="75" height="70" rx="18" />
-            <path d="M62 45 L88 22 C96 15 106 20 106 30 L106 60 C106 70 96 75 88 68 Z" opacity="0.85" />
-            <path d="M85 45 L62 27 L62 63 Z" fill="#181528" />
+      <!-- Boas-vindas Originais do Claudin.ia -->
+      <div id="welcomeDashboard" class="flex flex-col items-center text-center mt-6 mb-4 px-2">
+        <div class="w-16 h-16 rounded-3xl bg-[#161622] border border-[#2E2E44] flex items-center justify-center mb-4 core-glow">
+          <svg class="w-8 h-8 text-[#9B8AFB]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/>
           </svg>
         </div>
 
-        <h2 class="text-xl font-bold text-[#9B8AFB] mb-2">Vamos criar algo novo?</h2>
-        <p id="creditsBanner" class="text-sm font-medium text-[#4ADE80] mb-1">
-          Rotação de tokens ativa no seu saldo.
-        </p>
-        <p class="text-xs text-zinc-500 max-w-xs leading-relaxed mb-6">
-          Se uma IA atingir o limite, o Claudin.ia troca automaticamente de modelo sem interromper o seu projeto.
+        <h2 class="text-xl font-bold text-white mb-1">O que vamos construir no <span class="text-[#9B8AFB]">Claudin.ia</span>?</h2>
+        <p class="text-xs text-[#34D399] font-medium mb-5">
+          Fluxo contínuo ativado · As suas IAs trocam de chave/modelo sem travar
         </p>
 
-        <!-- Dois Botões Principais Estilo "Tentar de novo" e "Suporte" -->
-        <div class="w-full max-w-xs space-y-2.5">
-          <button onclick="quickPrompt('Cria uma calculadora moderna com design escuro e botões lilás em HTML')" 
-            class="w-full py-3.5 px-4 rounded-xl btn-lilac font-semibold text-sm shadow-lg active:scale-98 transition">
-            Criar App · Rotação Automática
+        <!-- Grella de Sugestões Rápidas -->
+        <div class="grid grid-cols-1 gap-2.5 w-full max-w-sm text-left">
+          <button onclick="sendQuickPrompt('Cria um Dashboard Financeiro moderno em HTML com gráficos e tema escuro')" 
+            class="glass-card p-3.5 rounded-2xl hover:border-[#9B8AFB]/60 transition flex items-center justify-between group">
+            <div>
+              <div class="text-xs font-semibold text-white group-hover:text-[#9B8AFB]">📊 Dashboard Financeiro Interativo</div>
+              <div class="text-[11px] text-zinc-400">Gera código completo no Artifact Studio</div>
+            </div>
+            <span class="text-[#9B8AFB] text-sm">→</span>
           </button>
-          <button onclick="switchTab('models')" 
-            class="w-full py-3.5 px-4 rounded-xl bg-transparent border border-zinc-800 text-white font-semibold text-sm hover:bg-zinc-900 transition">
-            Configurar IAs & Google
+
+          <button onclick="sendQuickPrompt('Cria uma Calculadora Científica completa com histórico e design futurista em HTML')" 
+            class="glass-card p-3.5 rounded-2xl hover:border-[#9B8AFB]/60 transition flex items-center justify-between group">
+            <div>
+              <div class="text-xs font-semibold text-white group-hover:text-[#9B8AFB]">🧮 Calculadora Científica Neon</div>
+              <div class="text-[11px] text-zinc-400">Interface responsiva pronta a usar</div>
+            </div>
+            <span class="text-[#9B8AFB] text-sm">→</span>
+          </button>
+        </div>
+
+        <!-- Botões de Ação Principal -->
+        <div class="w-full max-w-sm mt-5 space-y-2">
+          <button onclick="switchView('models')" class="w-full py-3 rounded-xl btn-primary text-xs shadow-lg">
+            Gerir Tabelas de IAs & Skills de Tokens
+          </button>
+          <button onclick="connectGoogleModal()" class="w-full py-2.5 rounded-xl btn-outline text-xs font-medium hover:bg-zinc-900">
+            Vincular Conta Google / Gemini API
           </button>
         </div>
       </div>
 
     </div>
 
-    <!-- Barra de Digitação Inferior -->
-    <form id="chatForm" class="p-3.5 bg-[#070709] border-t border-zinc-900 flex gap-2">
-      <input id="userInput" type="text" placeholder="Peça ao Claudin.ia um site, jogo ou código..." 
-        class="flex-1 p-3.5 rounded-xl bg-[#121218] border border-zinc-800 text-zinc-100 text-sm focus:outline-none focus:border-[#9B8AFB]" required />
-      <button type="submit" class="px-5 py-3.5 rounded-xl btn-lilac font-bold text-sm shrink-0 active:scale-95 transition">
-        Enviar
-      </button>
+    <!-- Input Flutuante Moderno -->
+    <form id="chatForm" class="p-3 bg-[#08080C] border-t border-[#1E1E2C]">
+      <div class="flex items-center gap-2 bg-[#12121A] border border-[#28283C] rounded-2xl p-1.5 focus-within:border-[#9B8AFB] transition">
+        <input id="userInput" type="text" placeholder="Mensagem para Claudin.ia..." 
+          class="flex-1 bg-transparent px-3 py-2 text-sm text-white focus:outline-none" required />
+        <button type="submit" class="px-4 py-2.5 rounded-xl btn-primary text-xs shrink-0 shadow">
+          Gerar ✦
+        </button>
+      </div>
     </form>
-  </div>
+  </main>
 
-  <!-- ABA 2: TABELA DE IAS, CONEXÃO GOOGLE & SKILLS DE TOKENS -->
-  <div id="tabModels" class="hidden flex-1 overflow-y-auto p-4 space-y-4">
+  <!-- VIEW 2: TABELAS DE IAS, CONEXÃO GOOGLE & SKILLS DE TOKENS -->
+  <section id="viewModels" class="hidden flex-1 overflow-y-auto p-4 space-y-4">
     
-    <!-- Card Conectar Google + Chaves -->
-    <div class="bg-[#111116] border border-zinc-800/90 p-4 rounded-2xl space-y-3.5">
+    <!-- Painel Google + Rotação de Tokens -->
+    <div class="glass-card p-4 rounded-2xl space-y-3.5">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-sm font-bold text-[#9B8AFB]">Skills de Tokens & Conexão Google</h2>
-          <p class="text-[11px] text-[#4ADE80]">Troca automática caso os créditos/tokens acabem</p>
+          <h2 class="text-sm font-bold text-white">⚡ Skill de Tokens Infinitos</h2>
+          <p class="text-[11px] text-[#34D399]">Mudança automática de IA quando os tokens acabam</p>
         </div>
-        <button onclick="connectGoogle()" class="px-3 py-1.5 bg-white text-black rounded-xl text-xs font-bold flex items-center gap-1.5 shadow">
-          <span class="text-blue-600 font-extrabold">G</span>
-          <span id="googleStatusBtn">Conectar Google</span>
+        <button onclick="connectGoogleModal()" class="px-3 py-1.5 rounded-xl bg-white text-zinc-900 font-bold text-xs flex items-center gap-1.5 shadow">
+          <span class="text-blue-600 font-black">G</span>
+          <span id="googleAccountLabel">Conectar Google</span>
         </button>
       </div>
 
-      <div class="space-y-2">
-        <label class="text-xs text-zinc-400">Chaves Groq (separe várias por vírgula para rotação):</label>
+      <div class="space-y-2 pt-1">
+        <label class="text-[11px] text-zinc-400 font-medium">Pool de Chaves Groq (separe várias por vírgula):</label>
         <input id="groqKeysInput" type="password" placeholder="gsk_chave1, gsk_chave2..." 
-          class="w-full p-3 text-xs rounded-xl bg-[#070709] border border-zinc-800 text-zinc-200 focus:border-[#9B8AFB] focus:outline-none" />
+          class="w-full p-2.5 text-xs rounded-xl bg-[#08080C] border border-[#262638] text-zinc-200 focus:border-[#9B8AFB] focus:outline-none" />
       </div>
 
       <div class="space-y-2">
-        <label class="text-xs text-zinc-400">Chaves Google Gemini (AIza... do Google AI Studio):</label>
-        <input id="googleKeysInput" type="password" placeholder="AIzaSy..." 
-          class="w-full p-3 text-xs rounded-xl bg-[#070709] border border-zinc-800 text-zinc-200 focus:border-[#9B8AFB] focus:outline-none" />
+        <label class="text-[11px] text-zinc-400 font-medium">Pool de Chaves Google Gemini (AIza...):</label>
+        <input id="googleKeysInput" type="password" placeholder="AIzaSy... (Conecta ao Gemini 2.5 / 1.5)" 
+          class="w-full p-2.5 text-xs rounded-xl bg-[#08080C] border border-[#262638] text-zinc-200 focus:border-[#9B8AFB] focus:outline-none" />
       </div>
 
-      <button onclick="saveAndSyncModels()" class="w-full py-3 rounded-xl btn-lilac font-bold text-xs transition">
-        Guardar Chaves & Sincronizar Tabela de IAs
+      <button onclick="saveAndSyncModels()" class="w-full py-3 rounded-xl btn-primary text-xs">
+        Guardar Pool de Tokens & Atualizar Tabela
       </button>
     </div>
 
-    <!-- Tabela de Todas as IAs -->
-    <div class="bg-[#111116] border border-zinc-800/90 rounded-2xl overflow-hidden">
-      <div class="p-3.5 border-b border-zinc-800 flex justify-between items-center">
-        <span class="text-xs font-bold text-zinc-200">Tabela de Todas as IAs</span>
-        <span id="modelCountBadge" class="text-[11px] text-[#4ADE80] font-medium">A carregar...</span>
+    <!-- Tabela Completa de Modelos -->
+    <div class="glass-card rounded-2xl overflow-hidden">
+      <div class="p-3.5 border-b border-[#262638] flex justify-between items-center">
+        <span class="text-xs font-bold text-white">Matriz de IAs Conectadas</span>
+        <span id="totalModelsBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-[#34D399]/15 text-[#34D399] font-medium">Sincronizado</span>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-xs">
           <thead>
-            <tr class="bg-[#070709] text-zinc-500 border-b border-zinc-800">
-              <th class="p-3">Rede</th>
-              <th class="p-3">Modelo de IA</th>
-              <th class="p-3">Saldo / Estado</th>
-              <th class="p-3 text-right">Ação</th>
+            <tr class="bg-[#08080C] text-zinc-400 border-b border-[#262638]">
+              <th class="p-3">Provedor</th>
+              <th class="p-3">Modelo</th>
+              <th class="p-3">Status de Tokens</th>
+              <th class="p-3 text-right">Prioridade</th>
             </tr>
           </thead>
-          <tbody id="aiTableBody" class="divide-y divide-zinc-800/60"></tbody>
+          <tbody id="aiTableBody" class="divide-y divide-[#1E1E2C]"></tbody>
         </table>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- ABA 3: ARTIFACT (EXECUÇÃO DO APP) -->
-  <div id="tabArtifact" class="hidden flex-1 flex flex-col bg-[#070709] overflow-hidden">
-    <div class="p-2.5 bg-[#111116] border-b border-zinc-800 flex justify-between items-center px-4">
-      <span class="text-xs text-[#9B8AFB] font-semibold">✦ Preview Interativo · Claudin.ia</span>
-      <button onclick="switchTab('chat')" class="px-3 py-1 rounded-lg border border-zinc-700 text-xs text-zinc-200">
+  <!-- VIEW 3: ARTIFACT STUDIO -->
+  <section id="viewArtifact" class="hidden flex-1 flex flex-col bg-[#08080C] overflow-hidden">
+    <div class="p-2.5 bg-[#12121A] border-b border-[#262638] flex justify-between items-center px-4">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-[#9B8AFB]"></span>
+        <span class="text-xs text-white font-semibold">Artifact Studio · Execução em Tempo Real</span>
+      </div>
+      <button onclick="switchView('chat')" class="px-3 py-1 rounded-lg btn-outline text-xs">
         Voltar ao Chat
       </button>
     </div>
     <iframe id="previewFrame" class="flex-1 w-full h-full border-0 bg-white"></iframe>
-  </div>
+  </section>
 
   <script>
-    const SYSTEM_PROMPT = `És o Claudin.ia, um assistente avançado estilo Claude. Quando o utilizador pedir uma calculadora, site, jogo ou app, responde brevemente e coloca TODO o código HTML+CSS(Tailwind)+JS funcional dentro da tag <antArtifact>...</antArtifact>. Não uses blocos markdown dentro da tag, apenas o código HTML completo iniciando com <!DOCTYPE html>.`;
+    const SYSTEM_PROMPT = `És o Claudin.ia, uma plataforma avançada de IA. Quando o utilizador pedir uma interface, calculadora, jogo, dashboard ou site, explica de forma concisa e coloca TODO o código HTML+CSS(Tailwind)+JS funcional dentro da tag <antArtifact>...</antArtifact>. Não uses blocos markdown dentro da tag, apenas o código HTML puro começando por <!DOCTYPE html>.`;
 
     let aiModelsPool = [
-      { provider: 'Groq', id: 'llama-3.1-8b-instant', status: 'Disponível', cooldown: false },
-      { provider: 'Groq', id: 'llama3-70b-8192', status: 'Disponível', cooldown: false },
-      { provider: 'Groq', id: 'llama3-8b-8192', status: 'Disponível', cooldown: false },
-      { provider: 'Groq', id: 'gemma2-9b-it', status: 'Disponível', cooldown: false },
-      { provider: 'Groq', id: 'mixtral-8x7b-32768', status: 'Disponível', cooldown: false },
-      { provider: 'Google', id: 'gemini-2.5-flash', status: 'Disponível', cooldown: false },
-      { provider: 'Google', id: 'gemini-1.5-flash', status: 'Disponível', cooldown: false }
+      { provider: 'Groq', id: 'llama-3.1-8b-instant', cooldown: false },
+      { provider: 'Groq', id: 'llama3-70b-8192', cooldown: false },
+      { provider: 'Groq', id: 'llama3-8b-8192', cooldown: false },
+      { provider: 'Groq', id: 'gemma2-9b-it', cooldown: false },
+      { provider: 'Groq', id: 'mixtral-8x7b-32768', cooldown: false },
+      { provider: 'Google', id: 'gemini-2.5-flash', cooldown: false },
+      { provider: 'Google', id: 'gemini-1.5-flash', cooldown: false }
     ];
 
     let preferredModelId = null;
@@ -206,33 +243,39 @@
     googleInput.value = localStorage.getItem('google_keys_pool') || '';
 
     if (localStorage.getItem('google_user')) {
-      document.getElementById('googleStatusBtn').textContent = localStorage.getItem('google_user').split('@')[0];
+      document.getElementById('googleAccountLabel').textContent = localStorage.getItem('google_user').split('@')[0];
     }
 
-    function switchTab(tab) {
-      ['chat', 'models', 'artifact'].forEach(t => {
-        document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('hidden', t !== tab);
-      });
-      document.getElementById('navChat').className = tab === 'chat' ? 'text-[#9B8AFB] font-medium cursor-pointer' : 'hover:text-zinc-300 cursor-pointer';
-      document.getElementById('navModels').className = tab === 'models' ? 'text-[#9B8AFB] font-medium cursor-pointer' : 'hover:text-zinc-300 cursor-pointer';
-      if (tab === 'models') renderModelsTable();
+    function switchView(view) {
+      document.getElementById('viewChat').classList.toggle('hidden', view !== 'chat');
+      document.getElementById('viewModels').classList.toggle('hidden', view !== 'models');
+      document.getElementById('viewArtifact').classList.toggle('hidden', view !== 'artifact');
+
+      document.getElementById('tabBtnChat').className = view === 'chat'
+        ? 'px-3 py-1 rounded-lg bg-[#9B8AFB] text-[#08080C] font-semibold transition'
+        : 'px-3 py-1 rounded-lg text-zinc-400 hover:text-white transition';
+      document.getElementById('tabBtnModels').className = view === 'models'
+        ? 'px-3 py-1 rounded-lg bg-[#9B8AFB] text-[#08080C] font-semibold transition'
+        : 'px-3 py-1 rounded-lg text-zinc-400 hover:text-white transition';
+
+      if (view === 'models') renderModelsTable();
     }
 
-    function quickPrompt(text) {
+    function sendQuickPrompt(text) {
       document.getElementById('userInput').value = text;
       document.getElementById('chatForm').dispatchEvent(new Event('submit'));
     }
 
-    function connectGoogle() {
-      const val = prompt('Conectar ao Google:\nCole a sua chave Google Gemini (AIza...) OU digite o seu e-mail Google:');
-      if (!val) return;
-      if (val.trim().startsWith('AIza')) {
-        googleInput.value = val.trim();
+    function connectGoogleModal() {
+      const input = prompt('Conectar ao Google no Claudin.ia:\n\n• Cole a sua chave API do Google Gemini (AIza...)\n• OU digite o seu e-mail Google para identificar a sessão:');
+      if (!input) return;
+      if (input.trim().startsWith('AIza')) {
+        googleInput.value = input.trim();
         saveAndSyncModels();
-        alert('Google Gemini conectado à rotação de tokens!');
+        alert('Chave Google Gemini ativada na rotação automática de tokens!');
       } else {
-        localStorage.setItem('google_user', val.trim());
-        document.getElementById('googleStatusBtn').textContent = val.trim().split('@')[0];
+        localStorage.setItem('google_user', input.trim());
+        document.getElementById('googleAccountLabel').textContent = input.trim().split('@')[0];
       }
     }
 
@@ -264,7 +307,7 @@
 
             const googleModels = aiModelsPool.filter(m => m.provider === 'Google');
             aiModelsPool = [
-              ...liveGroq.map(id => ({ provider: 'Groq', id, status: 'Disponível', cooldown: false })),
+              ...liveGroq.map(id => ({ provider: 'Groq', id, cooldown: false })),
               ...googleModels
             ];
           }
@@ -275,31 +318,31 @@
       renderModelsTable();
     }
 
-    function selectModel(id) {
+    function setPriorityModel(id) {
       preferredModelId = id;
-      document.getElementById('activeModelPill').textContent = id;
+      document.getElementById('activeEnginePill').textContent = id;
       renderModelsTable();
-      switchTab('chat');
+      switchView('chat');
     }
 
     function renderModelsTable() {
       const tbody = document.getElementById('aiTableBody');
-      document.getElementById('modelCountBadge').textContent = `${aiModelsPool.length} IAs Prontas`;
+      document.getElementById('totalModelsBadge').textContent = `${aiModelsPool.length} Modelos na Fila`;
 
       tbody.innerHTML = aiModelsPool.map(m => {
         const isCurrent = preferredModelId === m.id;
         return `
-          <tr class="hover:bg-zinc-900/60 transition">
-            <td class="p-3 font-bold ${m.provider === 'Google' ? 'text-blue-400' : 'text-[#9B8AFB]'}">${m.provider}</td>
+          <tr class="hover:bg-white/5 transition">
+            <td class="p-3 font-bold ${m.provider === 'Google' ? 'text-sky-400' : 'text-[#9B8AFB]'}">${m.provider}</td>
             <td class="p-3 font-mono text-[11px] text-zinc-200">${m.id}</td>
             <td class="p-3">
-              <span class="text-[11px] font-medium ${m.cooldown ? 'text-amber-400' : 'text-[#4ADE80]'}">
-                ${m.cooldown ? '↻ Rotacionado' : isCurrent ? '● Em Uso' : '● Saldo OK'}
+              <span class="text-[11px] font-medium ${m.cooldown ? 'text-amber-400' : 'text-[#34D399]'}">
+                ${m.cooldown ? '↻ Alternado (Limite)' : isCurrent ? '● Primário' : '● Pronto (Backup)'}
               </span>
             </td>
             <td class="p-3 text-right">
-              <button onclick="selectModel('${m.id}')" class="px-3 py-1 rounded-lg ${isCurrent ? 'btn-lilac font-bold' : 'bg-zinc-800 text-zinc-200'} text-[11px]">
-                ${isCurrent ? 'Ativo' : 'Ativar'}
+              <button onclick="setPriorityModel('${m.id}')" class="px-3 py-1 rounded-lg ${isCurrent ? 'btn-primary' : 'btn-outline'} text-[11px]">
+                ${isCurrent ? 'Fixado' : 'Priorizar'}
               </button>
             </td>
           </tr>
@@ -307,12 +350,12 @@
       }).join('');
     }
 
-    async function runWithInfiniteTokens(prompt, onStatus) {
+    async function executeSeamlessFailover(prompt, onProgress) {
       const groqKeys = getKeys('groq');
       const googleKeys = getKeys('google');
 
       if (groqKeys.length === 0 && googleKeys.length === 0) {
-        throw new Error('Sem chaves configuradas. Toque no botão abaixo para colar a sua chave.');
+        throw new Error('Adicione pelo menos uma chave Groq (gsk_...) ou Google (AIza...) na aba Tabelas de IA & Skills.');
       }
 
       let queue = [...aiModelsPool];
@@ -326,7 +369,7 @@
         if (modelObj.provider === 'Groq' && groqKeys.length > 0) {
           for (const key of groqKeys) {
             try {
-              onStatus(`A gerar com ${modelObj.id}...`);
+              onProgress(`A processar via ${modelObj.id}...`);
               const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -347,13 +390,13 @@
               if (!res.ok || data.error) {
                 modelObj.cooldown = true;
                 lastErr = data.error?.message || res.statusText;
-                document.getElementById('tokenStatusText').textContent = `Trocou p/ backup`;
+                document.getElementById('subStatusText').textContent = `↻ Trocou de ${modelObj.id} automaticamente`;
                 continue;
               }
 
               modelObj.cooldown = false;
-              document.getElementById('activeModelPill').textContent = modelObj.id;
-              document.getElementById('tokenStatusText').textContent = `Tokens OK`;
+              document.getElementById('activeEnginePill').textContent = modelObj.id;
+              document.getElementById('subStatusText').textContent = `● Respondido com ${modelObj.id}`;
               return { reply: data.choices[0].message.content, usedModel: modelObj.id };
             } catch (e) {
               lastErr = e.message;
@@ -365,7 +408,7 @@
         if (modelObj.provider === 'Google' && googleKeys.length > 0) {
           for (const gKey of googleKeys) {
             try {
-              onStatus(`A gerar com Google ${modelObj.id}...`);
+              onProgress(`A processar via Google ${modelObj.id}...`);
               const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelObj.id}:generateContent?key=${gKey}`;
               const res = await fetch(url, {
                 method: 'POST',
@@ -383,7 +426,7 @@
               const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
               if (text) {
                 modelObj.cooldown = false;
-                document.getElementById('activeModelPill').textContent = modelObj.id;
+                document.getElementById('activeEnginePill').textContent = modelObj.id;
                 return { reply: text, usedModel: modelObj.id };
               }
             } catch (e) {
@@ -394,7 +437,7 @@
         }
       }
 
-      throw new Error(lastErr || 'Limite temporário atingido.');
+      throw new Error(lastErr || 'Todas as chaves atingiram o limite momentâneo.');
     }
 
     document.getElementById('chatForm').addEventListener('submit', async (e) => {
@@ -404,57 +447,53 @@
       if (!prompt) return;
       input.value = '';
 
-      const hero = document.getElementById('heroEmptyState');
-      if (hero) hero.style.display = 'none';
+      const welcome = document.getElementById('welcomeDashboard');
+      if (welcome) welcome.style.display = 'none';
 
       const msgContainer = document.getElementById('messages');
       msgContainer.innerHTML += `
-        <div class="bg-[#16161D] border border-zinc-800 text-zinc-100 p-3.5 rounded-2xl ml-auto max-w-[85%] text-xs">
+        <div class="bg-[#1A1A26] border border-[#2E2E42] text-white p-3.5 rounded-2xl ml-auto max-w-[85%] text-xs">
           ${prompt}
         </div>`;
 
       const botDiv = document.createElement('div');
-      botDiv.className = 'bg-[#111116] border border-zinc-800/90 p-4 rounded-2xl max-w-[92%] text-xs text-zinc-200 whitespace-pre-wrap leading-relaxed';
-      botDiv.textContent = 'A conectar ao pool de IAs...';
+      botDiv.className = 'glass-card p-4 rounded-2xl max-w-[92%] text-xs text-zinc-200 whitespace-pre-wrap leading-relaxed';
+      botDiv.textContent = 'A sincronizar IAs...';
       msgContainer.appendChild(botDiv);
       msgContainer.scrollTop = msgContainer.scrollHeight;
 
       try {
-        const { reply, usedModel } = await runWithInfiniteTokens(prompt, (st) => {
-          botDiv.innerHTML = `<span class="text-[#9B8AFB] font-semibold">${st}</span>`;
+        const { reply, usedModel } = await executeSeamlessFailover(prompt, (st) => {
+          botDiv.innerHTML = `<span class="text-[#9B8AFB] font-medium">${st}</span>`;
         });
 
         const match = reply.match(/<antArtifact>([\s\S]*?)<\/antArtifact>/);
         if (match) {
           document.getElementById('previewFrame').srcdoc = match[1].trim();
           botDiv.innerHTML = `
-            <div class="text-[11px] text-[#4ADE80] font-medium mb-1.5">● Concluído via ${usedModel} (Créditos preservados)</div>
+            <div class="flex items-center justify-between text-[11px] text-[#34D399] font-medium mb-2 pb-1.5 border-b border-[#262638]">
+              <span>✦ Motor: ${usedModel}</span>
+              <span>Artifact Pronto</span>
+            </div>
             <div>${reply.replace(/<antArtifact>[\s\S]*?<\/antArtifact>/, '')}</div>
-            <button onclick="switchTab('artifact')" class="mt-3 w-full py-3 rounded-xl btn-lilac font-semibold text-xs shadow-lg">
-              Abrir Projeto Gerado · Artifact
+            <button onclick="switchView('artifact')" class="mt-3 w-full py-3 rounded-xl btn-primary text-xs shadow-lg">
+              Abrir Aplicação no Artifact Studio ↗
             </button>
           `;
         } else {
           botDiv.innerHTML = `
-            <div class="text-[11px] text-[#4ADE80] font-medium mb-1.5">● Respondido via ${usedModel}</div>
+            <div class="text-[11px] text-[#34D399] font-medium mb-1.5">✦ Motor: ${usedModel}</div>
             <div>${reply}</div>
           `;
         }
       } catch (err) {
-        // Card de erro idêntico ao ecrã "Vamos tentar de novo?" da sua imagem
         botDiv.innerHTML = `
-          <div class="text-center py-3 space-y-2">
-            <div class="text-base font-bold text-[#9B8AFB]">Vamos tentar de novo?</div>
-            <div class="text-xs font-medium text-[#4ADE80]">Os seus tokens continuam protegidos no saldo.</div>
-            <div class="text-[11px] text-zinc-400">${err.message}</div>
-            <div class="pt-2 space-y-2">
-              <button onclick="quickPrompt('${prompt.replace(/'/g, "\\'")}')" class="w-full py-3 rounded-xl btn-lilac font-semibold text-xs">
-                Tentar de novo · Rotação Auto
-              </button>
-              <button onclick="switchTab('models')" class="w-full py-2.5 rounded-xl border border-zinc-800 text-white font-semibold text-xs">
-                Configurar Chaves / Suporte
-              </button>
-            </div>
+          <div class="space-y-2">
+            <div class="text-sm font-bold text-[#9B8AFB]">Ajuste de Chave Necessário</div>
+            <div class="text-xs text-zinc-400">${err.message}</div>
+            <button onclick="switchView('models')" class="w-full py-2.5 rounded-xl btn-primary text-xs mt-2">
+              Abrir Tabelas de IA & Configurar Chaves
+            </button>
           </div>
         `;
       }
