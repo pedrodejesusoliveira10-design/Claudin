@@ -3,160 +3,465 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Claude Clone Mobile</title>
+  <title>Claudin.ia</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #070709;
+      color: #F4F4F6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .lilac-glow {
+      filter: drop-shadow(0 0 28px rgba(155, 138, 251, 0.35));
+    }
+    .btn-lilac {
+      background-color: #9B8AFB;
+      color: #09090D;
+    }
+    .btn-lilac:hover {
+      background-color: #8A76F9;
+    }
+    .pill-dark {
+      background-color: #16161D;
+      border: 1px solid #262632;
+    }
+  </style>
 </head>
-<body class="bg-[#F9F9F8] text-stone-800 h-screen flex flex-col overflow-hidden font-sans">
-  <!-- Topo Mobile -->
-  <header class="p-3 bg-white border-b border-stone-200 flex flex-col gap-2">
+<body class="h-screen flex flex-col overflow-hidden select-none">
+
+  <!-- TOPO ESTILO IMAGEM DE REFERÊNCIA -->
+  <header class="pt-3 pb-2 px-4 bg-[#070709] border-b border-zinc-900 flex flex-col gap-2.5 z-10">
     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-1.5">
-        <span class="text-amber-600 font-bold text-lg">✦</span>
-        <h1 class="font-serif font-semibold text-base">Claude Cloud Mobile</h1>
+      <!-- Botão Circular Esquerdo + Avatar + Nome Claudin.ia -->
+      <div class="flex items-center gap-2.5">
+        <button onclick="switchTab('chat')" class="w-9 h-9 rounded-full bg-[#16161D] border border-zinc-800 flex items-center justify-center text-zinc-300 active:scale-95 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+
+        <div class="w-8 h-8 rounded-lg bg-[#9B8AFB]/15 border border-[#9B8AFB]/40 flex items-center justify-center text-[#9B8AFB] font-bold text-sm">
+          ✦
+        </div>
+
+        <h1 class="font-bold text-base tracking-wide text-white uppercase">Claudin.ia</h1>
       </div>
-      <div class="flex bg-stone-200 p-0.5 rounded-lg text-xs font-medium">
-        <button onclick="switchTab('chat')" id="btnChat" class="px-3 py-1 rounded-md bg-white shadow-sm">Chat</button>
-        <button onclick="switchTab('artifact')" id="btnArt" class="px-3 py-1 rounded-md text-stone-600">Artifact ✨</button>
-      </div>
+
+      <!-- Pílula Direita Estilo "● Geração 2 ⌄" -->
+      <button onclick="switchTab('models')" class="pill-dark px-3.5 py-1.5 rounded-full flex items-center gap-2 text-xs font-medium text-zinc-200 active:scale-95 transition">
+        <span id="statusDot" class="w-2 h-2 rounded-full bg-[#4ADE80]"></span>
+        <span id="activeModelPill" class="max-w-[110px] truncate">Geração Auto</span>
+        <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
     </div>
-    <div class="flex gap-2">
-      <input id="apiKey" type="password" placeholder="Chave GROQ (gsk_...)" 
-        class="text-xs p-2 border border-stone-300 rounded-lg flex-1 bg-stone-50" />
-      <select id="modelSelect" class="text-xs p-2 border border-stone-300 rounded-lg bg-stone-50 max-w-[150px] truncate">
-        <option value="">Auto (Detetar modelo)</option>
-      </select>
+
+    <!-- Sub-barra Estilo "Youtube · Flow Podcast · 2h 18   [↗ Abrir original]" -->
+    <div class="flex items-center justify-between text-xs text-zinc-500 px-1">
+      <div class="flex items-center gap-1.5 truncate">
+        <span onclick="switchTab('chat')" id="navChat" class="text-[#9B8AFB] font-medium cursor-pointer">Chat IA</span>
+        <span>·</span>
+        <span onclick="switchTab('models')" id="navModels" class="hover:text-zinc-300 cursor-pointer">IAs & Skills</span>
+        <span>·</span>
+        <span id="tokenStatusText" class="text-[#4ADE80]">Tokens Ativos</span>
+      </div>
+
+      <button onclick="switchTab('artifact')" class="flex items-center gap-1 text-[#9B8AFB] font-medium hover:underline shrink-0">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        <span>Abrir Artifact</span>
+      </button>
     </div>
   </header>
 
-  <!-- Aba 1: Chat -->
+  <!-- ABA 1: CHAT CENTRAL (COM O DESIGN DO ÍCONE LILÁS CENTRAL) -->
   <div id="tabChat" class="flex-1 flex flex-col overflow-hidden">
-    <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-3 font-serif text-sm">
-      <div class="text-stone-500 text-center mt-10">
-        <p class="text-lg text-stone-800 mb-1">Como posso ajudar hoje?</p>
-        <p class="text-xs font-sans">O sistema escolhe automaticamente o melhor modelo disponível na sua chave Groq!</p>
+    <div id="messages" class="flex-1 overflow-y-auto p-5 space-y-4">
+      
+      <!-- Estado Inicial Idêntico à Imagem -->
+      <div id="heroEmptyState" class="flex flex-col items-center justify-center text-center mt-12 mb-6 px-4">
+        <!-- Ícone Central Lilás com Brilho (Estilo Câmara/IA da foto) -->
+        <div class="lilac-glow mb-6">
+          <svg class="w-24 h-24 text-[#9B8AFB]" viewBox="0 0 120 90" fill="currentColor">
+            <rect x="10" y="10" width="75" height="70" rx="18" />
+            <path d="M62 45 L88 22 C96 15 106 20 106 30 L106 60 C106 70 96 75 88 68 Z" opacity="0.85" />
+            <path d="M85 45 L62 27 L62 63 Z" fill="#181528" />
+          </svg>
+        </div>
+
+        <h2 class="text-xl font-bold text-[#9B8AFB] mb-2">Vamos criar algo novo?</h2>
+        <p id="creditsBanner" class="text-sm font-medium text-[#4ADE80] mb-1">
+          Rotação de tokens ativa no seu saldo.
+        </p>
+        <p class="text-xs text-zinc-500 max-w-xs leading-relaxed mb-6">
+          Se uma IA atingir o limite, o Claudin.ia troca automaticamente de modelo sem interromper o seu projeto.
+        </p>
+
+        <!-- Dois Botões Principais Estilo "Tentar de novo" e "Suporte" -->
+        <div class="w-full max-w-xs space-y-2.5">
+          <button onclick="quickPrompt('Cria uma calculadora moderna com design escuro e botões lilás em HTML')" 
+            class="w-full py-3.5 px-4 rounded-xl btn-lilac font-semibold text-sm shadow-lg active:scale-98 transition">
+            Criar App · Rotação Automática
+          </button>
+          <button onclick="switchTab('models')" 
+            class="w-full py-3.5 px-4 rounded-xl bg-transparent border border-zinc-800 text-white font-semibold text-sm hover:bg-zinc-900 transition">
+            Configurar IAs & Google
+          </button>
+        </div>
       </div>
+
     </div>
-    <form id="chatForm" class="p-3 bg-white border-t border-stone-200 flex gap-2">
-      <input id="userInput" type="text" placeholder="Peça um app, calculadora ou jogo..." 
-        class="flex-1 p-3 rounded-xl border border-stone-300 bg-[#F9F9F8] font-sans text-sm" required />
-      <button type="submit" class="px-4 py-3 bg-amber-700 text-white rounded-xl text-sm font-medium">Enviar</button>
+
+    <!-- Barra de Digitação Inferior -->
+    <form id="chatForm" class="p-3.5 bg-[#070709] border-t border-zinc-900 flex gap-2">
+      <input id="userInput" type="text" placeholder="Peça ao Claudin.ia um site, jogo ou código..." 
+        class="flex-1 p-3.5 rounded-xl bg-[#121218] border border-zinc-800 text-zinc-100 text-sm focus:outline-none focus:border-[#9B8AFB]" required />
+      <button type="submit" class="px-5 py-3.5 rounded-xl btn-lilac font-bold text-sm shrink-0 active:scale-95 transition">
+        Enviar
+      </button>
     </form>
   </div>
 
-  <!-- Aba 2: Artifact -->
-  <div id="tabArtifact" class="hidden flex-1 flex flex-col bg-white overflow-hidden">
-    <iframe id="previewFrame" class="flex-1 w-full h-full border-0"></iframe>
+  <!-- ABA 2: TABELA DE IAS, CONEXÃO GOOGLE & SKILLS DE TOKENS -->
+  <div id="tabModels" class="hidden flex-1 overflow-y-auto p-4 space-y-4">
+    
+    <!-- Card Conectar Google + Chaves -->
+    <div class="bg-[#111116] border border-zinc-800/90 p-4 rounded-2xl space-y-3.5">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-sm font-bold text-[#9B8AFB]">Skills de Tokens & Conexão Google</h2>
+          <p class="text-[11px] text-[#4ADE80]">Troca automática caso os créditos/tokens acabem</p>
+        </div>
+        <button onclick="connectGoogle()" class="px-3 py-1.5 bg-white text-black rounded-xl text-xs font-bold flex items-center gap-1.5 shadow">
+          <span class="text-blue-600 font-extrabold">G</span>
+          <span id="googleStatusBtn">Conectar Google</span>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-xs text-zinc-400">Chaves Groq (separe várias por vírgula para rotação):</label>
+        <input id="groqKeysInput" type="password" placeholder="gsk_chave1, gsk_chave2..." 
+          class="w-full p-3 text-xs rounded-xl bg-[#070709] border border-zinc-800 text-zinc-200 focus:border-[#9B8AFB] focus:outline-none" />
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-xs text-zinc-400">Chaves Google Gemini (AIza... do Google AI Studio):</label>
+        <input id="googleKeysInput" type="password" placeholder="AIzaSy..." 
+          class="w-full p-3 text-xs rounded-xl bg-[#070709] border border-zinc-800 text-zinc-200 focus:border-[#9B8AFB] focus:outline-none" />
+      </div>
+
+      <button onclick="saveAndSyncModels()" class="w-full py-3 rounded-xl btn-lilac font-bold text-xs transition">
+        Guardar Chaves & Sincronizar Tabela de IAs
+      </button>
+    </div>
+
+    <!-- Tabela de Todas as IAs -->
+    <div class="bg-[#111116] border border-zinc-800/90 rounded-2xl overflow-hidden">
+      <div class="p-3.5 border-b border-zinc-800 flex justify-between items-center">
+        <span class="text-xs font-bold text-zinc-200">Tabela de Todas as IAs</span>
+        <span id="modelCountBadge" class="text-[11px] text-[#4ADE80] font-medium">A carregar...</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-[#070709] text-zinc-500 border-b border-zinc-800">
+              <th class="p-3">Rede</th>
+              <th class="p-3">Modelo de IA</th>
+              <th class="p-3">Saldo / Estado</th>
+              <th class="p-3 text-right">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="aiTableBody" class="divide-y divide-zinc-800/60"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA 3: ARTIFACT (EXECUÇÃO DO APP) -->
+  <div id="tabArtifact" class="hidden flex-1 flex flex-col bg-[#070709] overflow-hidden">
+    <div class="p-2.5 bg-[#111116] border-b border-zinc-800 flex justify-between items-center px-4">
+      <span class="text-xs text-[#9B8AFB] font-semibold">✦ Preview Interativo · Claudin.ia</span>
+      <button onclick="switchTab('chat')" class="px-3 py-1 rounded-lg border border-zinc-700 text-xs text-zinc-200">
+        Voltar ao Chat
+      </button>
+    </div>
+    <iframe id="previewFrame" class="flex-1 w-full h-full border-0 bg-white"></iframe>
   </div>
 
   <script>
-    const SYSTEM_PROMPT = `És um assistente estilo Claude. Sempre que o utilizador pedir uma interface, calculadora, jogo ou página, responde com uma breve explicação e coloca TODO o código HTML+CSS(Tailwind)+JS funcional dentro da tag <antArtifact>...</antArtifact>. Não uses blocos markdown dentro da tag, apenas o código HTML completo iniciando com <!DOCTYPE html>.`;
+    const SYSTEM_PROMPT = `És o Claudin.ia, um assistente avançado estilo Claude. Quando o utilizador pedir uma calculadora, site, jogo ou app, responde brevemente e coloca TODO o código HTML+CSS(Tailwind)+JS funcional dentro da tag <antArtifact>...</antArtifact>. Não uses blocos markdown dentro da tag, apenas o código HTML completo iniciando com <!DOCTYPE html>.`;
 
-    const apiKeyInput = document.getElementById('apiKey');
-    const modelSelect = document.getElementById('modelSelect');
+    let aiModelsPool = [
+      { provider: 'Groq', id: 'llama-3.1-8b-instant', status: 'Disponível', cooldown: false },
+      { provider: 'Groq', id: 'llama3-70b-8192', status: 'Disponível', cooldown: false },
+      { provider: 'Groq', id: 'llama3-8b-8192', status: 'Disponível', cooldown: false },
+      { provider: 'Groq', id: 'gemma2-9b-it', status: 'Disponível', cooldown: false },
+      { provider: 'Groq', id: 'mixtral-8x7b-32768', status: 'Disponível', cooldown: false },
+      { provider: 'Google', id: 'gemini-2.5-flash', status: 'Disponível', cooldown: false },
+      { provider: 'Google', id: 'gemini-1.5-flash', status: 'Disponível', cooldown: false }
+    ];
 
-    apiKeyInput.value = localStorage.getItem('groq_key') || '';
+    let preferredModelId = null;
 
-    async function loadModels() {
-      const key = apiKeyInput.value.replace(/\s+/g, '');
-      if (!key.startsWith('gsk_')) return;
-      try {
-        const res = await fetch('https://api.groq.com/openai/v1/models', {
-          headers: { 'Authorization': 'Bearer ' + key }
-        });
-        const data = await res.json();
-        if (data.data && Array.isArray(data.data)) {
-          // Filtra modelos de texto/chat (ignora modelos de áudio/whisper/guard)
-          const chatModels = data.data
-            .map(m => m.id)
-            .filter(id => !id.includes('whisper') && !id.includes('guard') && !id.includes('tts'));
-          
-          if (chatModels.length > 0) {
-            modelSelect.innerHTML = chatModels.map(id => `<option value="${id}">${id}</option>`).join('');
-            // Dá preferência a modelos Llama ou Qwen ou DeepSeek mais potentes se existirem
-            const preferred = chatModels.find(id => id.includes('llama') || id.includes('qwen') || id.includes('deepseek')) || chatModels[0];
-            modelSelect.value = preferred;
-          }
-        }
-      } catch (e) {
-        console.error(e);
+    const groqInput = document.getElementById('groqKeysInput');
+    const googleInput = document.getElementById('googleKeysInput');
+
+    groqInput.value = localStorage.getItem('groq_keys_pool') || localStorage.getItem('groq_key') || '';
+    googleInput.value = localStorage.getItem('google_keys_pool') || '';
+
+    if (localStorage.getItem('google_user')) {
+      document.getElementById('googleStatusBtn').textContent = localStorage.getItem('google_user').split('@')[0];
+    }
+
+    function switchTab(tab) {
+      ['chat', 'models', 'artifact'].forEach(t => {
+        document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('hidden', t !== tab);
+      });
+      document.getElementById('navChat').className = tab === 'chat' ? 'text-[#9B8AFB] font-medium cursor-pointer' : 'hover:text-zinc-300 cursor-pointer';
+      document.getElementById('navModels').className = tab === 'models' ? 'text-[#9B8AFB] font-medium cursor-pointer' : 'hover:text-zinc-300 cursor-pointer';
+      if (tab === 'models') renderModelsTable();
+    }
+
+    function quickPrompt(text) {
+      document.getElementById('userInput').value = text;
+      document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+    }
+
+    function connectGoogle() {
+      const val = prompt('Conectar ao Google:\nCole a sua chave Google Gemini (AIza...) OU digite o seu e-mail Google:');
+      if (!val) return;
+      if (val.trim().startsWith('AIza')) {
+        googleInput.value = val.trim();
+        saveAndSyncModels();
+        alert('Google Gemini conectado à rotação de tokens!');
+      } else {
+        localStorage.setItem('google_user', val.trim());
+        document.getElementById('googleStatusBtn').textContent = val.trim().split('@')[0];
       }
     }
 
-    apiKeyInput.addEventListener('input', () => {
-      localStorage.setItem('groq_key', apiKeyInput.value.trim());
-      loadModels();
-    });
+    function getKeys(provider) {
+      const raw = provider === 'groq' ? groqInput.value : googleInput.value;
+      return raw.split(',').map(k => k.replace(/\s+/g, '')).filter(Boolean);
+    }
 
-    if (apiKeyInput.value) loadModels();
+    async function saveAndSyncModels() {
+      localStorage.setItem('groq_keys_pool', groqInput.value.trim());
+      localStorage.setItem('google_keys_pool', googleInput.value.trim());
 
-    function switchTab(tab) {
-      const isChat = tab === 'chat';
-      document.getElementById('tabChat').classList.toggle('hidden', !isChat);
-      document.getElementById('tabArtifact').classList.toggle('hidden', isChat);
-      document.getElementById('btnChat').className = isChat ? 'px-3 py-1 rounded-md bg-white shadow-sm' : 'px-3 py-1 rounded-md text-stone-600';
-      document.getElementById('btnArt').className = !isChat ? 'px-3 py-1 rounded-md bg-amber-600 text-white shadow-sm' : 'px-3 py-1 rounded-md text-stone-600';
+      const groqKeys = getKeys('groq');
+      if (groqKeys.length > 0) {
+        try {
+          const res = await fetch('https://api.groq.com/openai/v1/models', {
+            headers: { 'Authorization': 'Bearer ' + groqKeys[0] }
+          });
+          const data = await res.json();
+          if (data.data && Array.isArray(data.data)) {
+            const liveGroq = data.data
+              .map(m => m.id)
+              .filter(id => !id.includes('whisper') && !id.includes('guard') && !id.includes('tts'));
+
+            liveGroq.sort((a, b) => {
+              const score = id => (id.includes('llama') ? 2 : id.includes('gemma') ? 1 : 0);
+              return score(b) - score(a);
+            });
+
+            const googleModels = aiModelsPool.filter(m => m.provider === 'Google');
+            aiModelsPool = [
+              ...liveGroq.map(id => ({ provider: 'Groq', id, status: 'Disponível', cooldown: false })),
+              ...googleModels
+            ];
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      renderModelsTable();
+    }
+
+    function selectModel(id) {
+      preferredModelId = id;
+      document.getElementById('activeModelPill').textContent = id;
+      renderModelsTable();
+      switchTab('chat');
+    }
+
+    function renderModelsTable() {
+      const tbody = document.getElementById('aiTableBody');
+      document.getElementById('modelCountBadge').textContent = `${aiModelsPool.length} IAs Prontas`;
+
+      tbody.innerHTML = aiModelsPool.map(m => {
+        const isCurrent = preferredModelId === m.id;
+        return `
+          <tr class="hover:bg-zinc-900/60 transition">
+            <td class="p-3 font-bold ${m.provider === 'Google' ? 'text-blue-400' : 'text-[#9B8AFB]'}">${m.provider}</td>
+            <td class="p-3 font-mono text-[11px] text-zinc-200">${m.id}</td>
+            <td class="p-3">
+              <span class="text-[11px] font-medium ${m.cooldown ? 'text-amber-400' : 'text-[#4ADE80]'}">
+                ${m.cooldown ? '↻ Rotacionado' : isCurrent ? '● Em Uso' : '● Saldo OK'}
+              </span>
+            </td>
+            <td class="p-3 text-right">
+              <button onclick="selectModel('${m.id}')" class="px-3 py-1 rounded-lg ${isCurrent ? 'btn-lilac font-bold' : 'bg-zinc-800 text-zinc-200'} text-[11px]">
+                ${isCurrent ? 'Ativo' : 'Ativar'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function runWithInfiniteTokens(prompt, onStatus) {
+      const groqKeys = getKeys('groq');
+      const googleKeys = getKeys('google');
+
+      if (groqKeys.length === 0 && googleKeys.length === 0) {
+        throw new Error('Sem chaves configuradas. Toque no botão abaixo para colar a sua chave.');
+      }
+
+      let queue = [...aiModelsPool];
+      if (preferredModelId) {
+        queue.sort((a, b) => (a.id === preferredModelId ? -1 : b.id === preferredModelId ? 1 : 0));
+      }
+
+      let lastErr = '';
+
+      for (const modelObj of queue) {
+        if (modelObj.provider === 'Groq' && groqKeys.length > 0) {
+          for (const key of groqKeys) {
+            try {
+              onStatus(`A gerar com ${modelObj.id}...`);
+              const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + key
+                },
+                body: JSON.stringify({
+                  model: modelObj.id,
+                  max_tokens: 850,
+                  messages: [
+                    { role: 'system', content: SYSTEM_PROMPT },
+                    { role: 'user', content: prompt }
+                  ]
+                })
+              });
+
+              const data = await res.json();
+              if (!res.ok || data.error) {
+                modelObj.cooldown = true;
+                lastErr = data.error?.message || res.statusText;
+                document.getElementById('tokenStatusText').textContent = `Trocou p/ backup`;
+                continue;
+              }
+
+              modelObj.cooldown = false;
+              document.getElementById('activeModelPill').textContent = modelObj.id;
+              document.getElementById('tokenStatusText').textContent = `Tokens OK`;
+              return { reply: data.choices[0].message.content, usedModel: modelObj.id };
+            } catch (e) {
+              lastErr = e.message;
+              continue;
+            }
+          }
+        }
+
+        if (modelObj.provider === 'Google' && googleKeys.length > 0) {
+          for (const gKey of googleKeys) {
+            try {
+              onStatus(`A gerar com Google ${modelObj.id}...`);
+              const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelObj.id}:generateContent?key=${gKey}`;
+              const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n\nPedido: " + prompt }] }]
+                })
+              });
+              const data = await res.json();
+              if (!res.ok || data.error) {
+                modelObj.cooldown = true;
+                lastErr = data.error?.message || res.statusText;
+                continue;
+              }
+              const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+              if (text) {
+                modelObj.cooldown = false;
+                document.getElementById('activeModelPill').textContent = modelObj.id;
+                return { reply: text, usedModel: modelObj.id };
+              }
+            } catch (e) {
+              lastErr = e.message;
+              continue;
+            }
+          }
+        }
+      }
+
+      throw new Error(lastErr || 'Limite temporário atingido.');
     }
 
     document.getElementById('chatForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const apiKey = apiKeyInput.value.replace(/\s+/g, '');
-      if (!apiKey.startsWith('gsk_')) {
-        return alert('Atenção: Cole a sua chave começada por gsk_ na caixa de cima!');
-      }
-
-      if (!modelSelect.value) {
-        await loadModels();
-      }
-      const chosenModel = modelSelect.value || 'llama3-8b-8192';
-
       const input = document.getElementById('userInput');
       const prompt = input.value.trim();
+      if (!prompt) return;
       input.value = '';
 
+      const hero = document.getElementById('heroEmptyState');
+      if (hero) hero.style.display = 'none';
+
       const msgContainer = document.getElementById('messages');
-      msgContainer.innerHTML += `<div class="bg-stone-200 p-3 rounded-2xl ml-auto max-w-[85%] font-sans text-xs">${prompt}</div>`;
-      
+      msgContainer.innerHTML += `
+        <div class="bg-[#16161D] border border-zinc-800 text-zinc-100 p-3.5 rounded-2xl ml-auto max-w-[85%] text-xs">
+          ${prompt}
+        </div>`;
+
       const botDiv = document.createElement('div');
-      botDiv.className = 'bg-white border border-stone-200 p-3.5 rounded-2xl max-w-[90%] shadow-sm whitespace-pre-wrap text-sm';
-      botDiv.textContent = `A criar com ${chosenModel}...`;
+      botDiv.className = 'bg-[#111116] border border-zinc-800/90 p-4 rounded-2xl max-w-[92%] text-xs text-zinc-200 whitespace-pre-wrap leading-relaxed';
+      botDiv.textContent = 'A conectar ao pool de IAs...';
       msgContainer.appendChild(botDiv);
       msgContainer.scrollTop = msgContainer.scrollHeight;
 
       try {
-        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + apiKey
-          },
-          body: JSON.stringify({
-            model: chosenModel,
-            messages: [
-              { role: 'system', content: SYSTEM_PROMPT },
-              { role: 'user', content: prompt }
-            ]
-          })
+        const { reply, usedModel } = await runWithInfiniteTokens(prompt, (st) => {
+          botDiv.innerHTML = `<span class="text-[#9B8AFB] font-semibold">${st}</span>`;
         });
 
-        const data = await res.json();
-        if (!res.ok || data.error) {
-          botDiv.textContent = 'Detalhe do erro da API: ' + (data.error?.message || res.statusText);
-          return;
-        }
-
-        const reply = data.choices?.[0]?.message?.content || 'Sem resposta.';
         const match = reply.match(/<antArtifact>([\s\S]*?)<\/antArtifact>/);
         if (match) {
           document.getElementById('previewFrame').srcdoc = match[1].trim();
-          botDiv.innerHTML = reply.replace(/<antArtifact>[\s\S]*?<\/antArtifact>/, '') + 
-            `<br><button onclick="switchTab('artifact')" class="mt-2 w-full py-2.5 bg-amber-100 text-amber-900 rounded-lg font-sans text-xs font-bold">▶ Tocar para abrir o App criado (Artifact ✨)</button>`;
+          botDiv.innerHTML = `
+            <div class="text-[11px] text-[#4ADE80] font-medium mb-1.5">● Concluído via ${usedModel} (Créditos preservados)</div>
+            <div>${reply.replace(/<antArtifact>[\s\S]*?<\/antArtifact>/, '')}</div>
+            <button onclick="switchTab('artifact')" class="mt-3 w-full py-3 rounded-xl btn-lilac font-semibold text-xs shadow-lg">
+              Abrir Projeto Gerado · Artifact
+            </button>
+          `;
         } else {
-          botDiv.textContent = reply;
+          botDiv.innerHTML = `
+            <div class="text-[11px] text-[#4ADE80] font-medium mb-1.5">● Respondido via ${usedModel}</div>
+            <div>${reply}</div>
+          `;
         }
       } catch (err) {
-        botDiv.textContent = 'Erro de ligação: ' + err.message;
+        // Card de erro idêntico ao ecrã "Vamos tentar de novo?" da sua imagem
+        botDiv.innerHTML = `
+          <div class="text-center py-3 space-y-2">
+            <div class="text-base font-bold text-[#9B8AFB]">Vamos tentar de novo?</div>
+            <div class="text-xs font-medium text-[#4ADE80]">Os seus tokens continuam protegidos no saldo.</div>
+            <div class="text-[11px] text-zinc-400">${err.message}</div>
+            <div class="pt-2 space-y-2">
+              <button onclick="quickPrompt('${prompt.replace(/'/g, "\\'")}')" class="w-full py-3 rounded-xl btn-lilac font-semibold text-xs">
+                Tentar de novo · Rotação Auto
+              </button>
+              <button onclick="switchTab('models')" class="w-full py-2.5 rounded-xl border border-zinc-800 text-white font-semibold text-xs">
+                Configurar Chaves / Suporte
+              </button>
+            </div>
+          </div>
+        `;
       }
+      msgContainer.scrollTop = msgContainer.scrollHeight;
     });
+
+    saveAndSyncModels();
   </script>
 </body>
 </html>
